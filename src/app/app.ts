@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ButtonModule } from '@openng/optimus-ui/button';
+import { Button } from '@openng/optimus-ui/button';
 @Component({
-  imports: [RouterOutlet, ButtonModule],
+  imports: [RouterOutlet, Button],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
