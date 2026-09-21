@@ -5,6 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *)); /*dark mode configuration */
 
 @theme {
+  /* @theme inline { */
   --breakpoint-*: initial;
   --breakpoint-sm: 576px;
   --breakpoint-md: 768px;

@@ -1,0 +1,16 @@
+<p-card
+  [style]="{ width: '25rem', overflow: 'hidden' }"
+  [pt]="{
+    header: { class: 'mt-4' },
+    title: { class: 'text-center' },
+    subtitle: { class: 'text-center' },
+  }"
+>
+  <ng-template #header>
+    <app-logo />
+  </ng-template>
+  <ng-template #title>{{ cardTitle() }}</ng-template>
+  <ng-template #subtitle>{{ cardSubtitle() }}</ng-template>
+
+  <ng-content />
+</p-card>
