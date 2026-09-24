@@ -2,14 +2,7 @@
 <app-auth-card cardTitle="Bienvenido" cardSubtitle="Inicie sesión para continuar">
   <form [formRoot]="loginForm" class="flex gap-3 flex-col w-full">
     <p-floatlabel variant="on">
-      <input
-        pInputText
-        id="email"
-        type="email"
-        [formField]="loginForm.email"
-        autocomplete="off"
-        fluid
-      />
+      <input pInputText id="email" type="email" [formField]="loginForm.email" fluid />
       <label for="email">Correo electrónico</label>
     </p-floatlabel>
 
@@ -42,7 +35,13 @@
     }
 
     <div class="flex flex-col items-center gap-4 mt-1">
-      <button pButton class="w-full" type="submit">Iniciar sesión</button>
+      <button pButton class="w-full" type="submit" [disabled]="loginForm().submitting()">
+        @if (loginForm().submitting()) {
+          Iniciando...
+        } @else {
+          Iniciar sesión
+        }
+      </button>
       <p class="text-sm">
         ¿No tienes cuenta? <a routerLink="/auth/register" class="text-primary">Regístrate</a>
       </p>

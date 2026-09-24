@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   email,
   form,
@@ -8,7 +8,6 @@ import {
   minLength,
   pattern,
   required,
-  submit,
   validate,
 } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
@@ -16,8 +15,10 @@ import { ButtonModule } from '@openng/optimus-ui/button';
 import { CheckboxModule } from '@openng/optimus-ui/checkbox';
 import { FloatLabelModule } from '@openng/optimus-ui/floatlabel';
 import { InputTextModule } from '@openng/optimus-ui/inputtext';
+import { ToastService } from '../../../../core/services/toast.service';
 import { AuthCard } from '../../components/auth-card/auth-card';
 import { registerData } from '../../models/auth.interface';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   imports: [
@@ -35,7 +36,10 @@ import { registerData } from '../../models/auth.interface';
   templateUrl: './register.html',
 })
 export class Register {
-  loginModel = signal<registerData>({
+  private readonly authService = inject(AuthService);
+  private readonly toastService = inject(ToastService);
+
+  registerModel = signal<registerData>({
     email: '',
     password: '',
     confirmPassword: '',
@@ -46,7 +50,7 @@ export class Register {
   });
 
   registerForm = form(
-    this.loginModel,
+    this.registerModel,
     (schema) => {
       // Validaciones para Email
       required(schema.email, { message: 'El correo electrónico es obligatorio.' });
@@ -97,28 +101,19 @@ export class Register {
     {
       submission: {
         action: async (field) => {
-          // const result = await console.log(field().value());
-          console.log(field().value());
+          try {
+            this.authService.register(field().value());
 
-          // if (result.ok) return;
-
-          return { kind: 'serverError', message: 'Failed to submit form' };
+            // Aquí va todo lo que quieras que pase en caso de éxito
+            // await this.router.navigate(['/auth/login']);
+            this.toastService.success('Registro', 'Existoso');
+            return; // sin retorno = éxito
+          } catch (error) {
+            this.toastService.error('Error al registrar', (error as Error).message);
+            return { kind: 'serverError', message: (error as Error).message };
+          }
         },
       },
     },
   );
-
-  async onSave() {
-    const success = await submit(this.registerForm, async (field) => {
-      // const result = await console.log(field().value());
-      console.log(field().value());
-
-      // if (result.ok) return;
-
-      return { kind: 'serverError', message: 'Failed to submit form' };
-    });
-    if (success) {
-      // Handle success — navigate, show confirmation, etc.
-    }
-  }
 }
