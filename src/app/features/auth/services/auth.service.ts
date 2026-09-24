@@ -1,33 +1,52 @@
-import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { Router } from 'express';
+import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../../environments/environment.development';
 import { loginData, registerData, userDto } from '../models/auth.interface';
+
+interface AuthResponse extends userDto {
+  token: string;
+}
+
+const TOKEN_KEY = 'auth_token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  users = signal<userDto[]>([]);
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
-  findUserByEmail(email: string): userDto | undefined {
-    return this.users().find((user) => user.email === email);
+  private readonly currentUser = signal<userDto | null>(null);
+  readonly isAuthenticated = computed(() => this.currentUser() !== null);
+  readonly user = this.currentUser.asReadonly();
+
+  async login(userData: loginData): Promise<void> {
+    const response = await firstValueFrom(
+      this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, userData),
+    );
+    this.setSession(response);
   }
 
-  register(userData: registerData) {
-    const existingUser = this.findUserByEmail(userData.email);
-
-    if (existingUser) {
-      throw new Error('Ya existe un usuario registrado con este correo.');
-    }
-
-    this.users.update((v) => [...v, { ...userData }]);
-    console.log('Usuario registrado');
+  async register(userData: registerData): Promise<void> {
+    const response = await firstValueFrom(
+      this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, userData),
+    );
+    this.setSession(response);
   }
 
-  login(userData: loginData) {
-    const user = this.findUserByEmail(userData.email);
+  logout(): void {
+    localStorage.removeItem(TOKEN_KEY);
+    this.currentUser.set(null);
+    this.router.navigate(['/auth/login']);
+  }
 
-    if (!user) {
-      throw new Error('Usuario no encontrado');
-    }
+  private setSession(response: AuthResponse): void {
+    const { token, ...user } = response;
+    localStorage.setItem(TOKEN_KEY, token);
+    this.currentUser.set(user);
+  }
 
-    // aquí, más adelante, comparar password (hasheado en un backend real)
-    return user;
+  getToken(): string | null {
+    return localStorage.getItem(TOKEN_KEY);
   }
 }

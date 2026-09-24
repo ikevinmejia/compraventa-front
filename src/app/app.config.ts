@@ -2,9 +2,12 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { MessageService } from '@openng/optimus-ui/api';
 import { provideOptimus } from '@openng/optimus-ui/config';
 import { routes } from './app.routes';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { tokenInterceptor } from './core/interceptors/token.interceptor';
 import { MyPreset } from './theme/my-preset';
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,5 +30,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideClientHydration(),
+    provideHttpClient(withInterceptors([tokenInterceptor, errorInterceptor])),
   ],
 };
