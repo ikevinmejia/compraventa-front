@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Router } from 'express';
+import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
-import { loginData, registerData, userDto } from '../models/auth.interface';
+import { loginData, userDto } from '../models/auth.interface';
 
 interface AuthResponse extends userDto {
   token: string;
@@ -27,7 +27,7 @@ export class AuthService {
     this.setSession(response);
   }
 
-  async register(userData: registerData): Promise<void> {
+  async register(userData: userDto): Promise<void> {
     const response = await firstValueFrom(
       this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, userData),
     );

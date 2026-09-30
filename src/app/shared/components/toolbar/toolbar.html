@@ -1,0 +1,20 @@
+<div class="card">
+  <p-toolbar>
+    <ng-template #start>
+      <p-button
+        (click)="layoutService.onMenuToggle()"
+        icon="pi pi-bars"
+        class="mr-2"
+        text
+        severity="secondary"
+      />
+      <app-logo />
+      <p class="text-xl ml-2">Compraventa Autos</p>
+    </ng-template>
+
+    <ng-template #end>
+      <p-splitbutton label="Save" [model]="items" />
+      <p-button icon="pi pi-user" class="mr-2" text severity="secondary" />
+    </ng-template>
+  </p-toolbar>
+</div>

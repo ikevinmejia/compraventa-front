@@ -10,7 +10,7 @@ import {
   required,
   validate,
 } from '@angular/forms/signals';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { CheckboxModule } from '@openng/optimus-ui/checkbox';
 import { FloatLabelModule } from '@openng/optimus-ui/floatlabel';
@@ -38,6 +38,7 @@ import { AuthService } from '../../services/auth.service';
 export class Register {
   private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
 
   registerModel = signal<registerData>({
     email: '',
@@ -101,12 +102,13 @@ export class Register {
     {
       submission: {
         action: async (field) => {
+          const { confirmPassword, termsAndConditions, ...rest } = field().value();
           try {
-            this.authService.register(field().value());
+            await this.authService.register(rest);
+            this.toastService.success('Registro', 'Existoso');
+            await this.router.navigate(['/auth/login']);
 
             // Aquí va todo lo que quieras que pase en caso de éxito
-            // await this.router.navigate(['/auth/login']);
-            this.toastService.success('Registro', 'Existoso');
             return; // sin retorno = éxito
           } catch (error) {
             this.toastService.error('Error al registrar', (error as Error).message);
