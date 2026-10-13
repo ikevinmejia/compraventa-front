@@ -4,6 +4,13 @@
 @import '@openng/optimus-ui-tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *)); /*dark mode configuration */
 
+:root {
+  --layout-section-transition-duration: 0.2s;
+  --text-color: var(--p-text-color);
+  --surface-border: var(--p-content-border-color);
+  --text-color-secondary: var(--p-text-muted-color);
+}
+
 @theme {
   /* @theme inline { */
   --breakpoint-*: initial;
