@@ -1,8 +1,15 @@
-import { afterNextRender, Component, inject, input, signal } from '@angular/core';
+import { afterNextRender, Component, computed, inject, input, signal } from '@angular/core';
 import { CardModule } from '@openng/optimus-ui/card';
 import { ChartModule } from '@openng/optimus-ui/chart';
-import type { ChartData, ChartOptions } from 'chart.js';
+import type { ChartData, ChartDataset, ChartOptions } from 'chart.js';
+import { merge } from 'chart.js/helpers';
 import { LayoutService } from '../../../features/dashboard/services/layout.service';
+import { ChartTheme, readChartTheme, shadeFor } from './chart-theme';
+
+const DATASET_DEFAULTS: Omit<ChartDataset<'bar'>, 'data'> = {
+  borderRadius: { topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 0 },
+  barThickness: 32,
+};
 @Component({
   selector: 'app-bar-chart',
   imports: [CardModule, ChartModule],
@@ -10,105 +17,65 @@ import { LayoutService } from '../../../features/dashboard/services/layout.servi
   styleUrl: './bar-chart.css',
 })
 export class BarChart {
-  layoutService = inject(LayoutService);
+  private layoutService = inject(LayoutService);
+
+  private theme = signal<ChartTheme | null>(null);
 
   header = input<string>();
   subheader = input<string>();
 
-  chartData = signal<ChartData<'bar'> | null>(null);
-  chartOptions = signal<ChartOptions<'bar'> | null>(null);
+  data = input.required<ChartData<'bar'>>();
+  options = input<ChartOptions<'bar'>>();
 
-  constructor() {
-    afterNextRender(() => {
-      setTimeout(() => {
-        this.initChart();
-      }, 150);
-    });
+  chartData = computed<ChartData<'bar'> | null>(() => {
+    const theme = this.theme();
+    if (!theme) return null;
 
-    // effect(() => {
-    //     this.layoutService.layoutConfig().darkTheme;
-    //     setTimeout(() => {
-    //         this.initChart();
-    //     }, 150);
-    // });
-  }
+    const data = this.data();
 
-  initChart() {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const borderColor = documentStyle.getPropertyValue('--surface-border');
-    const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
+    return {
+      ...data,
+      datasets: data.datasets.map((dataset, index) => ({
+        ...DATASET_DEFAULTS,
+        backgroundColor: theme.primary[shadeFor(index, data.datasets.length)],
+        ...dataset,
+      })),
+    };
+  });
 
-    this.chartData.set({
-      labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-      datasets: [
-        {
-          type: 'bar',
-          label: 'Subscriptions',
-          backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
-          data: [4000, 10000, 15000, 4000],
-          borderRadius: {
-            topLeft: 8,
-            topRight: 8,
-            bottomLeft: 0,
-            bottomRight: 0,
-          },
-          barThickness: 32,
-        },
-        {
-          type: 'bar',
-          label: 'Advertising',
-          backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
-          data: [2100, 8400, 2400, 7500],
-          borderRadius: {
-            topLeft: 8,
-            topRight: 8,
-            bottomLeft: 0,
-            bottomRight: 0,
-          },
-          barThickness: 32,
-        },
-        {
-          type: 'bar',
-          label: 'Affiliate',
-          backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
-          data: [4100, 5200, 3400, 7400],
-          borderRadius: {
-            topLeft: 8,
-            topRight: 8,
-            bottomLeft: 0,
-            bottomRight: 0,
-          },
-          borderSkipped: false,
-          barThickness: 32,
-        },
-      ],
-    });
+  chartOptions = computed<ChartOptions<'bar'> | null>(() => {
+    const theme = this.theme();
+    if (!theme) return null;
 
-    this.chartOptions.set({
+    const defaults: ChartOptions<'bar'> = {
       maintainAspectRatio: false,
       aspectRatio: 0.8,
-      plugins: {
-        legend: {
-          labels: {
-            color: textColor,
-          },
-        },
-      },
+      plugins: { legend: { labels: { color: theme.text } } },
       scales: {
         x: {
-          stacked: false,
-          ticks: { color: textMutedColor },
+          ticks: { color: theme.textMuted },
           grid: { color: 'transparent' },
           border: { display: true },
         },
         y: {
-          stacked: false,
-          ticks: { color: textMutedColor },
-          grid: { color: borderColor, drawTicks: false },
+          ticks: { color: theme.textMuted },
+          grid: { color: theme.border, drawTicks: false },
           border: { display: true },
         },
       },
-    });
+    };
+
+    const merged: ChartOptions<'bar'> = merge({}, defaults);
+    return merge(merged, this.options() ?? {});
+  });
+
+  constructor() {
+    afterNextRender(() => this.theme.set(readChartTheme()));
+
+    // Cuando cambie el tema claro/oscuro, vuelve a leer los colores
+    // effect(() => {
+    //   this.layoutService.layoutConfig().darkTheme; // solo para registrar la dependencia
+    //   setTimeout(() => this.theme.set(readChartTheme()), 150);
+    // });
   }
 }

@@ -1,9 +1,29 @@
 <div class="grid grid-cols-12 gap-8">
   <app-stats-widget class="contents" />
-  <app-bar-chart header="Ventas por semana" class="col-span-12 xl:col-span-6" />
-  <app-bar-chart header="Ingresos por mes" class="col-span-12 xl:col-span-6" />
-  <app-bar-chart header="Marcas maás vendidas" class="col-span-12 xl:col-span-6" />
-  <app-bar-chart header="Tiempo promedio en inventario" class="col-span-12 xl:col-span-6" />
+  <app-bar-chart
+    header="Ventas por semana"
+    [data]="graficoVentasSemana()"
+    [options]="{ plugins: { legend: { display: false } } }"
+    class="col-span-12 xl:col-span-6"
+  />
+  <app-bar-chart
+    header="Ingresos por mes"
+    [data]="graficoIngresosMes()"
+    [options]="{ plugins: { legend: { display: false } } }"
+    class="col-span-12 xl:col-span-6"
+  />
+  <app-bar-chart
+    header="Marcas maás vendidas"
+    [data]="graficoMarcaMasVendidas()"
+    [options]="{ plugins: { legend: { display: false } } }"
+    class="col-span-12 xl:col-span-6"
+  />
+  <app-bar-chart
+    header="Tiempo promedio en inventario"
+    [data]="graficoAntiguedad()"
+    [options]="{ plugins: { legend: { display: false } } }"
+    class="col-span-12 xl:col-span-6"
+  />
   <app-data-table
     title="Inventario estancado"
     class="col-span-12 xl:col-span-6"

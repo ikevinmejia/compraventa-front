@@ -4,6 +4,10 @@ import {
   columns,
   columnsDocumentation,
   columnsLegal,
+  graficoAntiguedad,
+  graficoIngresosMes,
+  graficoMarcaMasVendidas,
+  graficoVentasSemana,
   rowsDocumentation,
   rowsLegal,
   vehiculos,
@@ -12,6 +16,7 @@ import { BarChart } from '../../../../shared/components/bar-chart/bar-chart';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table';
 import { DataTableCellDirective } from '../../../../shared/components/data-table/data-table-cell.directive';
 import { StatsWidget } from '../../components/stats-widget/stats-widget';
+
 @Component({
   imports: [StatsWidget, BarChart, DataTableComponent, TagModule, DataTableCellDirective],
   selector: 'app-dashboard',
@@ -31,4 +36,9 @@ export class Dashboard {
     columns: columnsLegal,
     rows: rowsLegal,
   });
+
+  graficoVentasSemana = signal(graficoVentasSemana);
+  graficoIngresosMes = signal(graficoIngresosMes);
+  graficoMarcaMasVendidas = signal(graficoMarcaMasVendidas);
+  graficoAntiguedad = signal(graficoAntiguedad);
 }

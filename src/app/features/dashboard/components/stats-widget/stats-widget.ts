@@ -55,6 +55,15 @@ export class StatsWidget {
       icon: 'pi-ban',
       color: 'red',
     },
+    {
+      key: 'medianDaysToSell',
+      label: 'Días para vender',
+      value: 34,
+      suffix: 'días',
+      icon: 'pi-clock',
+      color: 'orange',
+      trend: { direction: 'down', percentage: 12 },
+    },
   ];
 
   colorClasses = COLOR_CLASSES;

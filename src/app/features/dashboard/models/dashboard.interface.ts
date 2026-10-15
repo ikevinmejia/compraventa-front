@@ -8,6 +8,7 @@ export interface Kpi {
   label: string;
   value: number;
   icon: string;
+  suffix?: string;
   color: 'blue' | 'green' | 'orange' | 'purple' | 'red';
   trend?: KpiTrend;
 }
