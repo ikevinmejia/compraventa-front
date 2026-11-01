@@ -1,5 +1,6 @@
 import { ChartData } from 'chart.js';
 import { TableColumn } from '../app/shared/components/data-table/data-table.model';
+import { Catalog } from '../app/shared/models/shared.interface';
 
 export const columns: TableColumn[] = [
   { field: 'imagen', header: 'Imagen' },
@@ -163,3 +164,32 @@ export const graficoAntiguedad: ChartData<'bar'> = {
     },
   ],
 };
+
+export const brands: Catalog[] = [
+  { id: 1, name: 'Toyota' },
+  { id: 2, name: 'Mazda' },
+  { id: 3, name: 'Honda' },
+  { id: 4, name: 'BYD' },
+  { id: 5, name: 'Suzuki' },
+];
+
+export const models: Catalog[] = [
+  { id: 1, name: 'Corolla' },
+  { id: 2, name: '2' },
+  { id: 3, name: 'CX-30' },
+  { id: 4, name: 'Yuan Up' },
+  { id: 5, name: 'Swift' },
+];
+
+export const engineTypes: Catalog[] = [
+  { id: 1, name: 'Gasolina' },
+  { id: 2, name: 'Diesel' },
+  { id: 3, name: 'Híbrido' },
+  { id: 4, name: 'Eléctrico' },
+];
+
+export const transmissions: Catalog[] = [
+  { id: 1, name: 'Mecánica' },
+  { id: 2, name: 'Automatica' },
+  { id: 3, name: 'No Aplica' },
+];

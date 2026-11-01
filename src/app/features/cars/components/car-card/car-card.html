@@ -1,0 +1,25 @@
+<div class="grid grid-cols-[repeat(auto-fill,minmax(17.75rem,1fr))] gap-4 my-5">
+  @for (car of cars; track car) {
+    <a
+      [routerLink]="['/admin/autos', car + 1]"
+      /* [routerLink]="['/admin/autos', auto.id]" */
+      class="block no-underline text-inherit rounded-border focus-visible:outline-2 focus-visible:outline-offset-2"
+    >
+      <p-card class="w-71 max-h-112 overflow-hidden cursor-pointer">
+        <ng-template #header>
+          <img
+            alt="Card"
+            class="w-full aspect-square object-cover"
+            src="https://optimus.openng.org/demo/card-ng.jpg"
+          />
+        </ng-template>
+        <ng-template #content>
+          <p class="text-sm font-normal">Marca referencia año motor versión-carro</p>
+          <p class="text-xl font-bold my-2">$ {{ 42000000 | number: '1.0-0' }}</p>
+          <p class="text-sm font-normal">2015 | {{ 24000 | number: '1.0-0' }} km</p>
+          <p class="text-sm font-normal text-gray-500">Municipio - Ciudad</p>
+        </ng-template>
+      </p-card>
+    </a>
+  }
+</div>

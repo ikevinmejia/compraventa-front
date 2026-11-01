@@ -1,0 +1,9 @@
+<ul class="list-none p-4 m-0">
+  @for (item of model; track item.label) {
+    @if (!item.separator) {
+      <li app-menuitem [item]="item" [root]="true"></li>
+    } @else {
+      <li class="menu-separator"></li>
+    }
+  }
+</ul>

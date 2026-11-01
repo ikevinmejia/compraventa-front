@@ -1,0 +1,45 @@
+<form class="flex flex-wrap items-end gap-4" (ngSubmit)="apply()">
+  @for (f of fields(); track f.key) {
+    <div class="flex flex-col gap-1">
+      <label [for]="f.key" class="text-sm">{{ f.label }}</label>
+
+      @switch (f.type) {
+        @case ('text') {
+          <input
+            pInputText
+            [id]="f.key"
+            [name]="f.key"
+            [placeholder]="f.placeholder ?? ''"
+            autocomplete="off"
+            [ngModel]="draft()[f.key]"
+            (ngModelChange)="f.live ? onSearchInput(f.key, $event) : setDraft(f.key, $event)"
+          />
+        }
+
+        @case ('select') {
+          <app-filter-select
+            [field]="f"
+            [value]="draft()[f.key]"
+            [parentValue]="f.dependsOn ? draft()[f.dependsOn] : undefined"
+            (valueChange)="setDraft(f.key, $event)"
+          />
+        }
+
+        @case ('date-range') {
+          <p-datepicker
+            [inputId]="f.key"
+            [name]="f.key"
+            selectionMode="range"
+            [showClear]="true"
+            dateFormat="dd/mm/yy"
+            [ngModel]="draft()[f.key]"
+            (ngModelChange)="setDraft(f.key, $event)"
+          />
+        }
+      }
+    </div>
+  }
+
+  <p-button type="submit" label="Aplicar" icon="pi pi-filter" />
+  <p-button type="button" label="Limpiar" severity="secondary" outlined (onClick)="clear()" />
+</form>

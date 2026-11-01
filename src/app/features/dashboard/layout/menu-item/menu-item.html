@@ -1,0 +1,75 @@
+@if (root() && isVisible()) {
+  <!-- <div
+    class="p-4 flex items-center justify-between text-surface-600 dark:text-surface-200 cursor-pointer p-ripple"
+  >
+    {{ item().label }}
+  </div> -->
+}
+@if ((!hasRouterLink() || hasChildren()) && isVisible()) {
+  <a
+    [attr.href]="item().url"
+    (click)="itemClick($event)"
+    [ngClass]="item()['class']"
+    [attr.target]="item().target"
+    tabindex="0"
+    pRipple
+    class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple"
+  >
+    <i [ngClass]="item().icon" class="layout-menuitem-icon"></i>
+    <span class="font-medium">{{ item().label }}</span>
+    @if (hasChildren()) {
+      <i class="pi pi-chevron-down"></i>
+    }
+  </a>
+}
+@if (hasRouterLink() && !hasChildren() && isVisible()) {
+  <a
+    (click)="itemClick($event)"
+    [ngClass]="item()['class']"
+    [routerLink]="item().routerLink"
+    routerLinkActive="active-route"
+    [routerLinkActiveOptions]="
+      item().routerLinkActiveOptions || {
+        paths: 'exact',
+        queryParams: 'ignored',
+        matrixParams: 'ignored',
+        fragment: 'ignored',
+      }
+    "
+    [fragment]="item().fragment"
+    [queryParamsHandling]="item().queryParamsHandling"
+    [preserveFragment]="item().preserveFragment"
+    [skipLocationChange]="item().skipLocationChange"
+    [replaceUrl]="item().replaceUrl"
+    [state]="item().state"
+    [queryParams]="item().queryParams"
+    [attr.target]="item().target"
+    tabindex="0"
+    pRipple
+    class="flex items-center cursor-pointer p-4 rounded-border text-surface-700 dark:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-700 duration-150 transition-colors p-ripple"
+  >
+    <i [ngClass]="item().icon" class="mr-2"></i>
+    <span class="font-medium">{{ item().label }}</span>
+    @if (hasChildren()) {
+      <i class="pi pi-chevron-down ml-auto"></i>
+    }
+  </a>
+}
+@if (hasChildren() && isVisible() && (root() || isActive())) {
+  <ul
+    [animate.enter]="initialized() ? 'p-submenu-enter' : null"
+    [animate.leave]="'p-submenu-leave'"
+    [class.layout-root-submenulist]="root()"
+    class="list-none py-0 pl-4 pr-0 m-0 hidden overflow-y-hidden transition-all duration-400 ease-in-out"
+  >
+    @for (child of item().items; track child?.label) {
+      <li
+        app-menuitem
+        [item]="child"
+        [parentPath]="fullPath()"
+        [root]="false"
+        [class]="child['badgeClass']"
+      ></li>
+    }
+  </ul>
+}

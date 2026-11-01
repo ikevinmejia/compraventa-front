@@ -1,0 +1,120 @@
+<!-- <form [formRoot]="form()" class="flex gap-3 flex-col w-full pt-2"> -->
+<div class="grid grid-cols-2 gap-4">
+  <p-floatlabel variant="on">
+    <p-select
+      inputId="brand"
+      [formField]="$any(form().brand)"
+      [options]="brands()"
+      optionLabel="name"
+      [filter]="true"
+      filterBy="name"
+      [showClear]="true"
+      appendTo="body"
+      fluid
+    />
+    <label for="brand">Marca</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="on">
+    <p-select
+      inputId="model"
+      [formField]="$any(form().model)"
+      [options]="models()"
+      optionLabel="name"
+      [filter]="true"
+      filterBy="name"
+      [showClear]="true"
+      appendTo="body"
+      fluid
+    />
+    <label for="model">Modelo</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="on">
+    <input
+      pInputText
+      id="plate"
+      type="text"
+      [formField]="form().plate"
+      autocomplete="off"
+      fluid
+      class="uppercase"
+    />
+    <label for="plate">Placa</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="on">
+    <p-select
+      inputId="year"
+      [formField]="$any(form().year)"
+      [options]="years()"
+      optionLabel="name"
+      [showClear]="true"
+      appendTo="body"
+      fluid
+    />
+    <label for="year">Año</label>
+  </p-floatlabel>
+
+  <p-floatlabel variant="on">
+    <p-select
+      inputId="engineType"
+      [formField]="$any(form().engineType)"
+      [options]="engineTypes()"
+      optionLabel="name"
+      [showClear]="true"
+      appendTo="body"
+      fluid
+    />
+    <label for="engineType">Tipo de motor</label>
+  </p-floatlabel>
+
+  @if (showDisplacement()) {
+    <p-floatlabel variant="on">
+      <input
+        pInputText
+        id="displacement"
+        type="number"
+        inputmode="numeric"
+        autocomplete="off"
+        [formField]="form().displacement"
+        fluid
+      />
+      <label for="displacement">Cilindraje</label>
+    </p-floatlabel>
+  }
+
+  @if (!isElectric()) {
+    <p-floatlabel variant="on">
+      <p-select
+        inputId="transmission"
+        [formField]="$any(form().transmission)"
+        [options]="transmissions()"
+        optionLabel="name"
+        dataKey="id"
+        [showClear]="true"
+        appendTo="body"
+        fluid
+      />
+      <label for="transmission">Transmisión</label>
+    </p-floatlabel>
+  }
+</div>
+
+@if ((form().plate().touched() || submitted()) && form().plate().invalid()) {
+  <small class="text-red-500">
+    @for (error of form().plate().errors(); track error.kind) {
+      {{ error.message }}
+    }
+  </small>
+}
+
+@if ((form().displacement().touched() || submitted()) && form().displacement().invalid()) {
+  <small class="text-red-500">
+    @for (error of form().displacement().errors(); track error.kind) {
+      {{ error.message }}
+    }
+  </small>
+}
+
+<ng-content />

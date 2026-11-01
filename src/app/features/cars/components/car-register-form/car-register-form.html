@@ -1,0 +1,12 @@
+<form [formRoot]="carForm" class="flex gap-3 flex-col w-full pt-2">
+  <app-car-form-fields [form]="carForm" />
+  <div class="flex flex-col items-center gap-4 mt-1">
+    <p-button class="w-full" [fluid]="true" type="submit" [disabled]="carForm().submitting()">
+      @if (carForm().submitting()) {
+        Guardando...
+      } @else {
+        Añadir
+      }
+    </p-button>
+  </div>
+</form>

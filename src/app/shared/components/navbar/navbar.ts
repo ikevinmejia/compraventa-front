@@ -5,13 +5,22 @@ import { DrawerModule } from '@openng/optimus-ui/drawer';
 import { RippleModule } from '@openng/optimus-ui/ripple';
 import { StyleClassModule } from '@openng/optimus-ui/styleclass';
 import { Logo } from '../../../assets/logo/logo';
+import { MenuLayout } from '../../../features/dashboard/layout/menu-layout/menu-layout';
 import { LayoutService } from '../../../features/dashboard/services/layout.service';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
-  imports: [AvatarModule, ButtonModule, DrawerModule, RippleModule, StyleClassModule, Logo],
+  imports: [
+    AvatarModule,
+    ButtonModule,
+    DrawerModule,
+    RippleModule,
+    StyleClassModule,
+    Logo,
+    MenuLayout,
+  ],
 })
 export class Navbar {
   layoutService = inject(LayoutService);

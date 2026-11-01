@@ -16,6 +16,12 @@ export const routes: Routes = [
     // canActivate: [authGuard],
     children: [
       { path: 'dashboard', loadChildren: () => import('./features/dashboard/dashboard.routes') },
+      { path: 'autos', loadChildren: () => import('./features/cars/cars.routes') },
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./shared/components/not-found/not-found').then((m) => m.Notfound),
+      },
     ],
   },
 

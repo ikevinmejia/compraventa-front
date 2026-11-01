@@ -1,0 +1,10 @@
+<p-paginator
+  (onPageChange)="onPageChange($event)"
+  [first]="first"
+  [rows]="rows"
+  [totalRecords]="120"
+  [showPageLinks]="true"
+  [showJumpToPageDropdown]="false"
+  [rowsPerPageOptions]="[10, 20, 30, 50, 100]"
+  /* currentPageReportTemplate="{first} - {last} de {totalRecords}" */
+/>
