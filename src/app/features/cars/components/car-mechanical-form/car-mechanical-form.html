@@ -1,1 +1,82 @@
-<p>car-mechanical-form works!</p>
+<form [formRoot]="carForm" class="flex gap-3 flex-col w-full pt-2">
+  <div class="grid grid-cols-1 gap-4">
+    <p-floatlabel variant="over">
+      <p-select
+        inputId="hasEngineLeaks"
+        [formField]="$any(carForm.hasEngineLeaks)"
+        [options]="yesNoOptions()"
+        optionLabel="name"
+        optionValue="id"
+        filterBy="name"
+        appendTo="body"
+        fluid
+      />
+      <label for="hasEngineLeaks">¿Tiene fugas?</label>
+    </p-floatlabel>
+
+    @if (showEngineLeaksDetail()) {
+      <p-floatlabel variant="on">
+        <input
+          pInputText
+          id="engineLeaksDetail"
+          type="text"
+          [formField]="carForm.engineLeaksDetail"
+          autocomplete="off"
+          fluid
+        />
+        <label for="engineLeaksDetail">Descripción de la fuga</label>
+      </p-floatlabel>
+    }
+
+    <p-floatlabel variant="on">
+      <p-select
+        inputId="transmissionCondition"
+        [formField]="$any(carForm.transmissionCondition)"
+        [options]="transmissionCondition()"
+        optionLabel="name"
+        filterBy="name"
+        [showClear]="true"
+        appendTo="body"
+        fluid
+      />
+      <label for="transmissionCondition">Condición de la transmisión</label>
+    </p-floatlabel>
+
+    <p-floatlabel variant="on">
+      <p-select
+        inputId="suspensionCondition"
+        [formField]="$any(carForm.suspensionCondition)"
+        [options]="suspensionCondition()"
+        optionLabel="name"
+        filterBy="name"
+        [showClear]="true"
+        appendTo="body"
+        fluid
+      />
+      <label for="suspensionCondition">Condición de la suspensión</label>
+    </p-floatlabel>
+
+    <p-floatlabel variant="on">
+      <input
+        pInputText
+        id="additionalMechanicalObservations"
+        type="text"
+        [formField]="carForm.additionalMechanicalObservations"
+        autocomplete="off"
+        fluid
+        class="uppercase"
+      />
+      <label for="additionalMechanicalObservations">Observaciones adicionales</label>
+    </p-floatlabel>
+  </div>
+
+  <div class="flex flex-col items-center gap-4 mt-1">
+    <p-button class="w-full" [fluid]="true" type="submit" [disabled]="carForm().submitting()">
+      @if (carForm().submitting()) {
+        Guardando...
+      } @else {
+        Guardar cambios
+      }
+    </p-button>
+  </div>
+</form>

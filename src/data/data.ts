@@ -193,3 +193,23 @@ export const transmissions: Catalog[] = [
   { id: 2, name: 'Automatica' },
   { id: 3, name: 'No Aplica' },
 ];
+
+// Formulario mecanico
+
+export const yesNoOptions: Catalog[] = [
+  { id: 1, name: 'Sí' },
+  { id: 2, name: 'No' },
+];
+
+export const transmissionCondition: Catalog[] = [
+  { id: 1, name: 'Buena' },
+  { id: 2, name: 'Desgaste' },
+  { id: 3, name: 'Deslizando' },
+  { id: 4, name: 'Molestando' },
+];
+
+export const suspensionCondition: Catalog[] = [
+  { id: 1, name: 'Buena' },
+  { id: 2, name: 'Cajoneo' },
+  { id: 3, name: 'Mala' },
+];

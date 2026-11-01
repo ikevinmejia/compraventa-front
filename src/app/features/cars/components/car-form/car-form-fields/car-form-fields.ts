@@ -25,7 +25,7 @@ const years: Catalog[] = Array.from({ length: 17 }, (_, i) => {
   styleUrl: './car-form-fields.css',
 })
 export class CarFormFields {
-  form = input.required<FieldTree<CarFormModel>>(); // verifica el nombre del tipo en tu versión
+  form = input.required<FieldTree<CarFormModel>>();
 
   submitted = signal(false);
 
