@@ -1,18 +1,16 @@
 <form [formRoot]="carForm" class="flex gap-3 flex-col w-full pt-2">
   <div class="grid grid-cols-1 gap-4">
-    <p-floatlabel variant="over">
-      <p-select
+    <div class="flex flex-col gap-2">
+      <label for="hasEngineLeaks">¿Tiene fugas?</label>
+      <p-selectbutton
         inputId="hasEngineLeaks"
         [formField]="$any(carForm.hasEngineLeaks)"
         [options]="yesNoOptions()"
         optionLabel="name"
-        optionValue="id"
         filterBy="name"
         appendTo="body"
-        fluid
       />
-      <label for="hasEngineLeaks">¿Tiene fugas?</label>
-    </p-floatlabel>
+    </div>
 
     @if (showEngineLeaksDetail()) {
       <p-floatlabel variant="on">

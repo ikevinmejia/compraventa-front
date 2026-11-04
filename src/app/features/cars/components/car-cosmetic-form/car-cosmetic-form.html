@@ -1,1 +1,302 @@
-<p>car-cosmetic-form works!</p>
+<form [formRoot]="carForm" class="flex gap-3 flex-col w-full pt-2">
+  <div class="grid grid-cols-1 gap-4">
+    <p class="font-medium text-xl">Ventanas</p>
+    <div class="flex flex-col gap-2 md:max-w-fit">
+      <label for="electricWindowsFunctional">¿Ventanas eléctricas?</label>
+      <p-selectbutton
+        inputId="electricWindowsFunctional"
+        [formField]="$any(carForm.electricWindowsFunctional)"
+        [options]="yesNoOptions()"
+        optionLabel="name"
+        filterBy="name"
+        appendTo="body"
+        fluid
+      />
+    </div>
+    <p class="font-medium text-xl">¿Funcionan las ventanas?</p>
+    <section class="grid grid-cols-2 md:flex gap-6 md:gap-2">
+      <div class="flex flex-col gap-3 w-full">
+        <label for="fl">Delantera izquierda</label>
+        <p-selectbutton
+          inputId="fl"
+          [formField]="$any(carForm.windowsCheckByDoor.fl)"
+          [options]="yesNoOptions()"
+          optionLabel="name"
+          filterBy="name"
+          appendTo="body"
+          fluid
+        />
+      </div>
+      <p-divider layout="vertical" class="hidden md:block" />
+      <div class="flex flex-col gap-3 w-full">
+        <label for="fr">Delantera derecha</label>
+        <p-selectbutton
+          inputId="fr"
+          [formField]="$any(carForm.windowsCheckByDoor.fr)"
+          [options]="yesNoOptions()"
+          optionLabel="name"
+          filterBy="name"
+          appendTo="body"
+          fluid
+        />
+      </div>
+      <p-divider layout="vertical" class="hidden md:block" />
+      <div class="flex flex-col gap-3 w-full">
+        <label for="rl">Trasero izquierdo</label>
+        <p-selectbutton
+          inputId="rl"
+          [formField]="$any(carForm.windowsCheckByDoor.rl)"
+          [options]="yesNoOptions()"
+          optionLabel="name"
+          filterBy="name"
+          appendTo="body"
+          fluid
+        />
+      </div>
+      <p-divider layout="vertical" class="hidden md:block" />
+      <div class="flex flex-col gap-3 w-full">
+        <label for="rr">Trasero derecho</label>
+        <p-selectbutton
+          inputId="rr"
+          [formField]="$any(carForm.windowsCheckByDoor.rr)"
+          [options]="yesNoOptions()"
+          optionLabel="name"
+          filterBy="name"
+          appendTo="body"
+          fluid
+        />
+      </div>
+    </section>
+    <p class="font-medium text-xl">Llantas</p>
+    <section class="grid sm:grid-cols-2 gap-3">
+      <p-floatlabel variant="on">
+        <p-select
+          inputId="rimsTypes"
+          [formField]="$any(carForm.rimsType)"
+          [options]="rimsTypes()"
+          optionLabel="name"
+          filterBy="name"
+          [showClear]="true"
+          appendTo="body"
+          fluid
+        />
+        <label for="rimsTypes">Tipo de rines</label>
+      </p-floatlabel>
+
+      <p-floatlabel variant="on">
+        <p-select
+          inputId="tiresCondition"
+          [formField]="$any(carForm.tiresCondition)"
+          [options]="tiresCondition()"
+          optionLabel="name"
+          filterBy="name"
+          [showClear]="true"
+          appendTo="body"
+          fluid
+        />
+        <label for="tiresCondition">Estado de las llantas</label>
+      </p-floatlabel>
+    </section>
+    <p class="font-medium text-xl">Volante</p>
+    <p-floatlabel variant="on">
+      <p-select
+        inputId="steeringColumnAdjustment"
+        [formField]="$any(carForm.steeringColumnAdjustment)"
+        [options]="adjustmentType()"
+        optionLabel="name"
+        filterBy="name"
+        [showClear]="true"
+        appendTo="body"
+        fluid
+      />
+      <label for="steeringColumnAdjustment">Ajuste del volante</label>
+    </p-floatlabel>
+    <p class="font-medium text-xl">Retrovisores</p>
+    <div class="flex flex-col gap-2 md:max-w-fit">
+      <label for="mirrorsFunctional">¿Espejos funcionales?</label>
+      <p-selectbutton
+        inputId="mirrorsFunctional"
+        [formField]="$any(carForm.mirrorsFunctional)"
+        [options]="yesNoOptions()"
+        optionLabel="name"
+        filterBy="name"
+        appendTo="body"
+        fluid
+      />
+    </div>
+    <p-floatlabel variant="on">
+      <p-select
+        inputId="mirrorsType"
+        [formField]="$any(carForm.mirrorsType)"
+        [options]="adjustmentType()"
+        optionLabel="name"
+        filterBy="name"
+        [showClear]="true"
+        appendTo="body"
+        fluid
+      />
+      <label for="mirrorsType">Tipo de vidrios</label>
+    </p-floatlabel>
+    <p class="font-medium text-xl">Pintura</p>
+    <p-floatlabel variant="on">
+      <p-select
+        inputId="paintCondition"
+        [formField]="$any(carForm.paintCondition)"
+        [options]="paintCondition()"
+        optionLabel="name"
+        filterBy="name"
+        [showClear]="true"
+        appendTo="body"
+        fluid
+      />
+      <label for="paintCondition">Condición de la pintura</label>
+    </p-floatlabel>
+    <p class="font-medium text-xl">Capó</p>
+    <div class="flex flex-col gap-2 md:max-w-fit">
+      <label for="hoodDents">¿Presenta golpes?</label>
+      <p-selectbutton
+        inputId="hoodDents"
+        [formField]="$any(carForm.hoodDents)"
+        [options]="yesNoOptions()"
+        optionLabel="name"
+        filterBy="name"
+        appendTo="body"
+        fluid
+      />
+    </div>
+    <p class="font-medium text-xl">Chazis</p>
+    <p-floatlabel variant="on">
+      <p-select
+        inputId="chassisFrontDamage"
+        [formField]="$any(carForm.chassisFrontDamage)"
+        [options]="chassisFrontDamage()"
+        optionLabel="name"
+        filterBy="name"
+        [showClear]="true"
+        appendTo="body"
+        fluid
+      />
+      <label for="chassisFrontDamage">¿Presenta golpes?</label>
+    </p-floatlabel>
+    <p class="font-medium text-xl">Parales</p>
+    <section class="grid sm:grid-cols-2 gap-3">
+      <p-floatlabel variant="on">
+        <p-select
+          inputId="driverDoorPillar"
+          [formField]="$any(carForm.driverDoorPillar)"
+          [options]="structuralCondition()"
+          optionLabel="name"
+          filterBy="name"
+          [showClear]="true"
+          appendTo="body"
+          fluid
+        />
+        <label for="driverDoorPillar">Conductor</label>
+      </p-floatlabel>
+
+      <p-floatlabel variant="on">
+        <p-select
+          inputId="passengerDoorPillar"
+          [formField]="$any(carForm.passengerDoorPillar)"
+          [options]="structuralCondition()"
+          optionLabel="name"
+          filterBy="name"
+          [showClear]="true"
+          appendTo="body"
+          fluid
+        />
+        <label for="passengerDoorPillar">Pasajero</label>
+      </p-floatlabel>
+    </section>
+    <p class="font-medium text-xl">Puertas</p>
+    <div class="flex flex-col gap-2 md:max-w-fit">
+      <label for="doorsOpenProperly">¿Abren bien?</label>
+      <p-selectbutton
+        inputId="doorsOpenProperly"
+        [formField]="$any(carForm.doorsOpenProperly)"
+        [options]="yesNoOptions()"
+        optionLabel="name"
+        filterBy="name"
+        appendTo="body"
+        fluid
+      />
+    </div>
+    <p class="font-medium text-xl">Maletero</p>
+    <section class="grid sm:grid-cols-2 gap-3">
+      <p-floatlabel variant="on">
+        <p-select
+          inputId="trunkStructure"
+          [formField]="$any(carForm.trunkStructure)"
+          [options]="structuralCondition()"
+          optionLabel="name"
+          filterBy="name"
+          [showClear]="true"
+          appendTo="body"
+          fluid
+        />
+        <label for="trunkStructure">Estructura</label>
+      </p-floatlabel>
+
+      <p-floatlabel variant="on">
+        <p-select
+          inputId="trunkFloor"
+          [formField]="$any(carForm.trunkFloor)"
+          [options]="structuralCondition()"
+          optionLabel="name"
+          filterBy="name"
+          [showClear]="true"
+          appendTo="body"
+          fluid
+        />
+        <label for="trunkFloor">Estructura del piso</label>
+      </p-floatlabel>
+      <div class="flex flex-col gap-2 md:max-w-fit">
+        <label for="trunkHasRust">¿Tiene podridos?</label>
+        <p-selectbutton
+          inputId="trunkHasRust"
+          [formField]="$any(carForm.trunkHasRust)"
+          [options]="yesNoOptions()"
+          optionLabel="name"
+          filterBy="name"
+          appendTo="body"
+          fluid
+        />
+      </div>
+    </section>
+    <p class="font-medium text-xl">Llanta</p>
+    <div class="flex flex-col gap-2 md:max-w-fit">
+      <label for="hasSpareTire">¿Tiene llanta de repuesto?</label>
+      <p-selectbutton
+        inputId="hasSpareTire"
+        [formField]="$any(carForm.hasSpareTire)"
+        [options]="yesNoOptions()"
+        optionLabel="name"
+        filterBy="name"
+        appendTo="body"
+        fluid
+      />
+    </div>
+    <p class="font-medium text-xl">Apuntes</p>
+    <p-floatlabel variant="on">
+      <input
+        pInputText
+        id="additionalObservations"
+        type="text"
+        [formField]="carForm.additionalObservations"
+        autocomplete="off"
+        fluid
+      />
+      <label for="additionalObservations">Observaciones adicionales</label>
+    </p-floatlabel>
+  </div>
+
+  <div class="flex flex-col items-center gap-4 mt-1">
+    <p-button class="w-full" fluid type="submit" [disabled]="carForm().submitting()">
+      @if (carForm().submitting()) {
+        Guardando...
+      } @else {
+        Guardar cambios
+      }
+    </p-button>
+  </div>
+</form>

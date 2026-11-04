@@ -9,6 +9,7 @@ import { suspensionCondition, transmissionCondition, yesNoOptions } from '../../
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
 import { CarMechanicalFormModel } from '../../models/car-mechanical-form.model';
+
 @Component({
   imports: [FormField, Select, FloatLabel, InputText, SelectButtonModule, ButtonModule, FormRoot],
   selector: 'app-car-mechanical-form',
@@ -33,7 +34,7 @@ export class CarMechanicalForm {
 
   showEngineLeaksDetail = computed(() => {
     const hasEngineLeaks = this.carModel().hasEngineLeaks;
-    return hasEngineLeaks !== null && hasEngineLeaks.id !== 1; // Se muestra el campo si hay fugas
+    return hasEngineLeaks !== null && hasEngineLeaks.id === 1; // Se muestra el campo si hay fugas
   });
 
   carForm = form(

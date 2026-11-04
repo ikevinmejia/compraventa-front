@@ -213,3 +213,84 @@ export const suspensionCondition: Catalog[] = [
   { id: 2, name: 'Cajoneo' },
   { id: 3, name: 'Mala' },
 ];
+
+// Formulario cosmetico
+
+export const rimsTypes: Catalog[] = [
+  { id: 1, name: 'De lujo' },
+  { id: 2, name: 'Original' },
+];
+
+export const tiresCondition: Catalog[] = [
+  { id: 1, name: 'Malas' },
+  { id: 2, name: 'Media vida' },
+  { id: 2, name: 'Buenas' },
+];
+
+export const adjustmentType: Catalog[] = [
+  // Ajuste de cabrilla / Tipo de vidrios
+  { id: 1, name: 'Manual' },
+  { id: 2, name: 'Eléctrico' },
+];
+
+export const paintCondition: Catalog[] = [
+  { id: 1, name: 'Original' },
+  { id: 2, name: 'Repintada' },
+  { id: 3, name: 'Deteriorada' },
+];
+
+export const chassisFrontDamage: Catalog[] = [
+  { id: 1, name: 'Conductor' },
+  { id: 2, name: 'Pasajero' },
+  { id: 3, name: 'Ambas' },
+  { id: 3, name: 'Ninguno' },
+];
+
+export const structuralCondition: Catalog[] = [
+  // passengerDoorPillar - trunkStructure - trunkFloor
+  { id: 1, name: 'Partido' },
+  { id: 2, name: 'Arreglado' },
+  { id: 3, name: 'Original' },
+];
+
+// Legal
+
+export const departments: Catalog[] = [
+  { id: 1, name: 'Antioquia' },
+  { id: 2, name: 'Amazonas' },
+  { id: 3, name: 'Bogotá D.C.' },
+  { id: 3, name: 'Manizales' },
+];
+
+export const citties: Catalog[] = [
+  { id: 1, name: 'Sabaneta' },
+  { id: 2, name: 'Itagui' },
+  { id: 3, name: 'Caldas' },
+  { id: 3, name: 'Envigado' },
+];
+
+export const aniosEnDeuda: Catalog[] = [
+  { id: 1, name: '1' },
+  { id: 2, name: '2' },
+  { id: 3, name: '3' },
+  { id: 4, name: '4' },
+  { id: 5, name: '5' },
+  { id: 6, name: '6' },
+  { id: 7, name: '7' },
+  { id: 8, name: '8' },
+  { id: 9, name: '9' },
+  { id: 10, name: '10' },
+];
+
+export const runtPendingIssues: Catalog[] = [
+  { id: 1, name: 'Prenda natural' },
+  { id: 2, name: 'Embargo judicial civil' },
+  { id: 3, name: 'Embargo Judicial familia' },
+  { id: 3, name: 'Embargo Judicial Penal' },
+];
+
+export const insuranceClaimType: Catalog[] = [
+  { id: 1, name: 'Menor cuantía' },
+  { id: 2, name: 'Mayor cuantía' },
+  { id: 3, name: 'Ninguna' },
+];
