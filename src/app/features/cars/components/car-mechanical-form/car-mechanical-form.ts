@@ -1,14 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { disabled, form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
-import { catchError, of } from 'rxjs';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
+import { lazyCatalog } from '../../../../shared/utils/lazy-catalog';
 import { CarMechanicalFormModel } from '../../models/car-mechanical-form.model';
 import { CatalogsService } from '../../services/catalogs.service';
 
@@ -32,22 +31,9 @@ export class CarMechanicalForm {
   submitted = signal(false);
 
   yesNoOptions = signal<Catalog[]>(this.catalogsService.getYesNoOptions()).asReadonly();
+  transmissionConditions = lazyCatalog(() => this.catalogsService.getTransmissionConditions());
 
-  transmissionCondition = toSignal(
-    this.catalogsService.getTransmissionConditions().pipe(
-      // El interceptor global muestra el error; [] deja el select en estado seguro.
-      catchError(() => of([] as Catalog[])),
-    ),
-    { initialValue: [] as Catalog[] },
-  );
-
-  suspensionCondition = toSignal(
-    this.catalogsService.getSuspensionConditions().pipe(
-      // El interceptor global muestra el error; [] deja el select en estado seguro.
-      catchError(() => of([] as Catalog[])),
-    ),
-    { initialValue: [] as Catalog[] },
-  );
+  suspensionConditions = lazyCatalog(() => this.catalogsService.getSuspensionConditions());
 
   showEngineLeaksDetail = computed(() => {
     const hasEngineLeaks = this.carModel().hasEngineLeaks;

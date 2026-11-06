@@ -1,11 +1,11 @@
 import { Component, computed, inject, input, signal, WritableSignal } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FieldTree, FormField } from '@angular/forms/signals';
 import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Select } from '@openng/optimus-ui/select';
-import { catchError, distinctUntilChanged, of, switchMap } from 'rxjs';
+import { of } from 'rxjs';
 import { Catalog } from '../../../../../shared/models/shared.interface';
+import { lazyCatalog } from '../../../../../shared/utils/lazy-catalog';
 import { CarFormModel } from '../../../models/car-form.model';
 import { CatalogsService } from '../../../services/catalogs.service';
 import { ELECTRIC_ENGINE_ID } from '../car-form.logic';
@@ -34,54 +34,17 @@ export class CarFormFields {
 
   submitted = signal(false);
 
-  /**
-   * `toSignal` mantiene el resultado accesible desde la plantilla como signal
-   * y limpia la suscripción al destruir este componente.
-   */
-  brands = toSignal(
-    this.catalogsService.getBrands().pipe(
-      // El interceptor global muestra el error; [] deja el select en estado seguro.
-      catchError(() => of([] as Catalog[])),
-    ),
-    { initialValue: [] as Catalog[] },
-  );
-
   /** ID de la marca actual, derivado del valor del Signal Form. */
-  private brandId = computed(() => this.form().brand().value()?.id ?? null);
-
-  /**
-   * Al cambiar el ID, switchMap consulta sus modelos y cancela la petición previa.
-   * Si se limpia la marca, emite una lista vacía sin llamar al backend.
-   */
-  models = toSignal(
-    toObservable(this.brandId).pipe(
-      distinctUntilChanged(),
-      switchMap((brandId) =>
-        brandId === null
-          ? of([] as Catalog[])
-          : this.catalogsService.getModels(brandId).pipe(catchError(() => of([] as Catalog[]))),
-      ),
-    ),
-    { initialValue: [] as Catalog[] },
-  );
+  brandId = computed(() => this.form().brand().value()?.id ?? null);
 
   years = signal<Catalog[]>(years);
 
-  engineTypes = toSignal(
-    this.catalogsService.getEngineTypes().pipe(
-      // El interceptor global muestra el error; [] deja el select en estado seguro.
-      catchError(() => of([] as Catalog[])),
-    ),
-    { initialValue: [] as Catalog[] },
+  brands = lazyCatalog(() => this.catalogsService.getBrands());
+  models = lazyCatalog<number | null>((brandId) =>
+    brandId == null ? of([] as Catalog[]) : this.catalogsService.getModels(brandId),
   );
-
-  transmissions = toSignal(
-    this.catalogsService.getTransmissions().pipe(
-      // El interceptor global muestra el error; [] deja el select en estado seguro.
-      catchError(() => of([] as Catalog[])),
-    ),
-    { initialValue: [] as Catalog[] },
-  );
+  engineTypes = lazyCatalog(() => this.catalogsService.getEngineTypes());
+  transmissions = lazyCatalog(() => this.catalogsService.getTransmissions());
 
   /**
    * La marca cambió por una acción del usuario: la referencia previa ya no aplica.

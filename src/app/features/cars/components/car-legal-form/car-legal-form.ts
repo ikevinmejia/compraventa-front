@@ -1,5 +1,4 @@
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { disabled, form, FormField, FormRoot, max, min, required } from '@angular/forms/signals';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { DatePickerModule } from '@openng/optimus-ui/datepicker';
@@ -9,9 +8,10 @@ import { InputText } from '@openng/optimus-ui/inputtext';
 import { MultiSelectModule } from '@openng/optimus-ui/multiselect';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
-import { catchError, distinctUntilChanged, of, switchMap } from 'rxjs';
+import { of } from 'rxjs';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
+import { lazyCatalog } from '../../../../shared/utils/lazy-catalog';
 import { CarLegalFormModel } from '../../models/car-legal-form.model';
 import { CatalogsService } from '../../services/catalogs.service';
 @Component({
@@ -72,10 +72,8 @@ export class CarLegalForm implements OnInit {
   yesNoOptions = signal<Catalog[]>(this.catalogsService.getYesNoOptions()).asReadonly();
   aniosEnDeuda = signal<Catalog[]>(this.catalogsService.getAniosEnDeuda()).asReadonly();
 
-  private departmentId = computed(
-    () => this.carModel().registrationDepartment?.id ?? null,
-    // ().value().registrationDepartment?.id ?? null
-  );
+  // El desplegable de municipios usa este ID como parámetro de su petición.
+  departmentId = computed(() => this.carModel().registrationDepartment?.id ?? null);
 
   private hasTrafficFines = computed(() => {
     const hasTrafficFines = this.carModel().hasTrafficFines;
@@ -97,51 +95,21 @@ export class CarLegalForm implements OnInit {
     return hasInsuranceClaims !== null && hasInsuranceClaims.id === 1; // Se muestra el campo si hay fugas
   });
 
-  departments = toSignal(
-    this.catalogsService.getDepartments().pipe(
-      // El interceptor global muestra el error; [] deja el select en estado seguro.
-      catchError(() => of([] as Catalog[])),
-    ),
-    { initialValue: [] as Catalog[] },
+  departments = lazyCatalog(() => this.catalogsService.getDepartments());
+  municipalities = lazyCatalog<number | null>((departmentId) =>
+    departmentId == null
+      ? of([] as Catalog[])
+      : this.catalogsService.getMunicipalities(departmentId),
   );
 
-  municipalities = toSignal(
-    toObservable(this.departmentId).pipe(
-      distinctUntilChanged(),
-      switchMap((departmentId) =>
-        departmentId === null
-          ? of([] as Catalog[])
-          : this.catalogsService
-              .getMunicipalities(departmentId)
-              .pipe(catchError(() => of([] as Catalog[]))),
-      ),
-    ),
-    { initialValue: [] as Catalog[] },
-  );
+  runtPendingIssues = lazyCatalog(() => this.catalogsService.getRuntPendingIssues());
+  insuranceClaimType = lazyCatalog(() => this.catalogsService.getInsuranceClaimTypes());
 
-  structuralCondition = toSignal(
-    this.catalogsService.getStructuralConditions().pipe(
-      // El interceptor global muestra el error; [] deja el select en estado seguro.
-      catchError(() => of([] as Catalog[])),
-    ),
-    { initialValue: [] as Catalog[] },
-  );
-
-  runtPendingIssues = toSignal(
-    this.catalogsService.getRuntPendingIssues().pipe(
-      // El interceptor global muestra el error; [] deja el select en estado seguro.
-      catchError(() => of([] as Catalog[])),
-    ),
-    { initialValue: [] as Catalog[] },
-  );
-
-  insuranceClaimType = toSignal(
-    this.catalogsService.getInsuranceClaimTypes().pipe(
-      // El interceptor global muestra el error; [] deja el select en estado seguro.
-      catchError(() => of([] as Catalog[])),
-    ),
-    { initialValue: [] as Catalog[] },
-  );
+  /** Al cambiar el padre, descarta el municipio y las opciones del departamento anterior. */
+  onDepartmentChange(): void {
+    this.carModel.update((model) => ({ ...model, registrationCity: null }));
+    this.municipalities.reset();
+  }
 
   carForm = form(
     this.carModel,
