@@ -1,14 +1,16 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { disabled, form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
-import { suspensionCondition, transmissionCondition, yesNoOptions } from '../../../../../data/data';
+import { catchError, of } from 'rxjs';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
 import { CarMechanicalFormModel } from '../../models/car-mechanical-form.model';
+import { CatalogsService } from '../../services/catalogs.service';
 
 @Component({
   imports: [FormField, Select, FloatLabel, InputText, SelectButtonModule, ButtonModule, FormRoot],
@@ -18,6 +20,7 @@ import { CarMechanicalFormModel } from '../../models/car-mechanical-form.model';
 })
 export class CarMechanicalForm {
   private readonly toastService = inject(ToastService);
+  private readonly catalogsService = inject(CatalogsService);
 
   carModel = signal<CarMechanicalFormModel>({
     hasEngineLeaks: null, // Tiene fugas?
@@ -28,9 +31,23 @@ export class CarMechanicalForm {
   });
   submitted = signal(false);
 
-  yesNoOptions = signal<Catalog[]>(yesNoOptions);
-  transmissionCondition = signal<Catalog[]>(transmissionCondition);
-  suspensionCondition = signal<Catalog[]>(suspensionCondition);
+  yesNoOptions = signal<Catalog[]>(this.catalogsService.getYesNoOptions()).asReadonly();
+
+  transmissionCondition = toSignal(
+    this.catalogsService.getTransmissionConditions().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
+
+  suspensionCondition = toSignal(
+    this.catalogsService.getSuspensionConditions().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
 
   showEngineLeaksDetail = computed(() => {
     const hasEngineLeaks = this.carModel().hasEngineLeaks;
@@ -49,6 +66,10 @@ export class CarMechanicalForm {
       required(schema.engineLeaksDetail, {
         message: 'Transmisión es requerida.',
         when: () => this.showEngineLeaksDetail(),
+      });
+
+      disabled(schema.engineLeaksDetail, {
+        when: () => !this.showEngineLeaksDetail(),
       });
 
       maxLength(schema.engineLeaksDetail, 3000);

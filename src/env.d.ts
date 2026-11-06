@@ -2,6 +2,7 @@
 declare interface Env {
   readonly NODE_ENV: string;
   readonly NG_APP_PRODUCTION: string;
+  readonly NG_APP_API_URL: string;
 }
 
 // 2. Aquí le dices a TypeScript que las vas a usar mediante 'import.meta.env'

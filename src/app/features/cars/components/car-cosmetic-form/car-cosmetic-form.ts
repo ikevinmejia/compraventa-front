@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { DividerModule } from '@openng/optimus-ui/divider';
@@ -6,18 +7,11 @@ import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
-import {
-  adjustmentType,
-  chassisFrontDamage,
-  paintCondition,
-  rimsTypes,
-  structuralCondition,
-  tiresCondition,
-  yesNoOptions,
-} from '../../../../../data/data';
+import { catchError, of } from 'rxjs';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
 import { CarCosmeticFormModel } from '../../models/car-cosmetic-form.model';
+import { CatalogsService } from '../../services/catalogs.service';
 
 @Component({
   imports: [
@@ -36,6 +30,7 @@ import { CarCosmeticFormModel } from '../../models/car-cosmetic-form.model';
 })
 export class CarCosmeticForm {
   private readonly toastService = inject(ToastService);
+  private readonly catalogsService = inject(CatalogsService);
 
   carModel = signal<CarCosmeticFormModel>({
     electricWindowsFunctional: null,
@@ -64,13 +59,55 @@ export class CarCosmeticForm {
   });
   submitted = signal(false);
 
-  yesNoOptions = signal<Catalog[]>(yesNoOptions);
-  rimsTypes = signal<Catalog[]>(rimsTypes);
-  tiresCondition = signal<Catalog[]>(tiresCondition);
-  adjustmentType = signal<Catalog[]>(adjustmentType);
-  paintCondition = signal<Catalog[]>(paintCondition);
-  chassisFrontDamage = signal<Catalog[]>(chassisFrontDamage);
-  structuralCondition = signal<Catalog[]>(structuralCondition);
+  yesNoOptions = signal<Catalog[]>(this.catalogsService.getYesNoOptions()).asReadonly();
+
+  rimsTypes = toSignal(
+    this.catalogsService.getRimsTypes().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
+
+  tiresCondition = toSignal(
+    this.catalogsService.getTiresConditions().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
+
+  adjustmentType = toSignal(
+    this.catalogsService.getAdjustmentTypes().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
+
+  paintCondition = toSignal(
+    this.catalogsService.getPaintConditions().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
+
+  chassisFrontDamage = toSignal(
+    this.catalogsService.getChassisDamages().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
+
+  structuralCondition = toSignal(
+    this.catalogsService.getStructuralConditions().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
 
   carForm = form(
     this.carModel,

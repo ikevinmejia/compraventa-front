@@ -12,6 +12,7 @@
           [showClear]="true"
           appendTo="body"
           fluid
+          filter
         />
         <label for="registrationDepartment">Departamento</label>
       </p-floatlabel>
@@ -20,12 +21,13 @@
         <p-select
           inputId="registrationCity"
           [formField]="$any(carForm.registrationCity)"
-          [options]="citties()"
+          [options]="municipalities()"
           optionLabel="name"
           filterBy="name"
           [showClear]="true"
           appendTo="body"
           fluid
+          filter
         />
         <label for="registrationCity">Municipio</label>
       </p-floatlabel>

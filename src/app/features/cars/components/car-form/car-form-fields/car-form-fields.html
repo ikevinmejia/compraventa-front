@@ -4,6 +4,8 @@
       inputId="brand"
       [formField]="$any(form().brand)"
       [options]="brands()"
+      (onChange)="onBrandChange()"
+      (onClear)="onBrandChange()"
       optionLabel="name"
       [filter]="true"
       filterBy="name"
@@ -68,36 +70,32 @@
     <label for="engineType">Tipo de motor</label>
   </p-floatlabel>
 
-  @if (showDisplacement()) {
-    <p-floatlabel variant="on">
-      <input
-        pInputText
-        id="displacement"
-        type="number"
-        inputmode="numeric"
-        autocomplete="off"
-        [formField]="form().displacement"
-        fluid
-      />
-      <label for="displacement">Cilindraje</label>
-    </p-floatlabel>
-  }
+  <p-floatlabel variant="on">
+    <input
+      pInputText
+      id="displacement"
+      type="number"
+      inputmode="numeric"
+      autocomplete="off"
+      [formField]="form().displacement"
+      fluid
+    />
+    <label for="displacement">Cilindraje</label>
+  </p-floatlabel>
 
-  @if (!isElectric()) {
-    <p-floatlabel variant="on">
-      <p-select
-        inputId="transmission"
-        [formField]="$any(form().transmission)"
-        [options]="transmissions()"
-        optionLabel="name"
-        dataKey="id"
-        [showClear]="true"
-        appendTo="body"
-        fluid
-      />
-      <label for="transmission">Transmisión</label>
-    </p-floatlabel>
-  }
+  <p-floatlabel variant="on">
+    <p-select
+      inputId="transmission"
+      [formField]="$any(form().transmission)"
+      [options]="transmissions()"
+      optionLabel="name"
+      dataKey="id"
+      [showClear]="true"
+      appendTo="body"
+      fluid
+    />
+    <label for="transmission">Transmisión</label>
+  </p-floatlabel>
 </div>
 
 @if ((form().plate().touched() || submitted()) && form().plate().invalid()) {

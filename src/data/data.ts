@@ -165,108 +165,11 @@ export const graficoAntiguedad: ChartData<'bar'> = {
   ],
 };
 
-export const brands: Catalog[] = [
-  { id: 1, name: 'Toyota' },
-  { id: 2, name: 'Mazda' },
-  { id: 3, name: 'Honda' },
-  { id: 4, name: 'BYD' },
-  { id: 5, name: 'Suzuki' },
-];
-
-export const models: Catalog[] = [
-  { id: 1, name: 'Corolla' },
-  { id: 2, name: '2' },
-  { id: 3, name: 'CX-30' },
-  { id: 4, name: 'Yuan Up' },
-  { id: 5, name: 'Swift' },
-];
-
-export const engineTypes: Catalog[] = [
-  { id: 1, name: 'Gasolina' },
-  { id: 2, name: 'Diesel' },
-  { id: 3, name: 'Híbrido' },
-  { id: 4, name: 'Eléctrico' },
-];
-
-export const transmissions: Catalog[] = [
-  { id: 1, name: 'Mecánica' },
-  { id: 2, name: 'Automatica' },
-  { id: 3, name: 'No Aplica' },
-];
-
 // Formulario mecanico
 
 export const yesNoOptions: Catalog[] = [
   { id: 1, name: 'Sí' },
   { id: 2, name: 'No' },
-];
-
-export const transmissionCondition: Catalog[] = [
-  { id: 1, name: 'Buena' },
-  { id: 2, name: 'Desgaste' },
-  { id: 3, name: 'Deslizando' },
-  { id: 4, name: 'Molestando' },
-];
-
-export const suspensionCondition: Catalog[] = [
-  { id: 1, name: 'Buena' },
-  { id: 2, name: 'Cajoneo' },
-  { id: 3, name: 'Mala' },
-];
-
-// Formulario cosmetico
-
-export const rimsTypes: Catalog[] = [
-  { id: 1, name: 'De lujo' },
-  { id: 2, name: 'Original' },
-];
-
-export const tiresCondition: Catalog[] = [
-  { id: 1, name: 'Malas' },
-  { id: 2, name: 'Media vida' },
-  { id: 2, name: 'Buenas' },
-];
-
-export const adjustmentType: Catalog[] = [
-  // Ajuste de cabrilla / Tipo de vidrios
-  { id: 1, name: 'Manual' },
-  { id: 2, name: 'Eléctrico' },
-];
-
-export const paintCondition: Catalog[] = [
-  { id: 1, name: 'Original' },
-  { id: 2, name: 'Repintada' },
-  { id: 3, name: 'Deteriorada' },
-];
-
-export const chassisFrontDamage: Catalog[] = [
-  { id: 1, name: 'Conductor' },
-  { id: 2, name: 'Pasajero' },
-  { id: 3, name: 'Ambas' },
-  { id: 3, name: 'Ninguno' },
-];
-
-export const structuralCondition: Catalog[] = [
-  // passengerDoorPillar - trunkStructure - trunkFloor
-  { id: 1, name: 'Partido' },
-  { id: 2, name: 'Arreglado' },
-  { id: 3, name: 'Original' },
-];
-
-// Legal
-
-export const departments: Catalog[] = [
-  { id: 1, name: 'Antioquia' },
-  { id: 2, name: 'Amazonas' },
-  { id: 3, name: 'Bogotá D.C.' },
-  { id: 3, name: 'Manizales' },
-];
-
-export const citties: Catalog[] = [
-  { id: 1, name: 'Sabaneta' },
-  { id: 2, name: 'Itagui' },
-  { id: 3, name: 'Caldas' },
-  { id: 3, name: 'Envigado' },
 ];
 
 export const aniosEnDeuda: Catalog[] = [
@@ -280,17 +183,4 @@ export const aniosEnDeuda: Catalog[] = [
   { id: 8, name: '8' },
   { id: 9, name: '9' },
   { id: 10, name: '10' },
-];
-
-export const runtPendingIssues: Catalog[] = [
-  { id: 1, name: 'Prenda natural' },
-  { id: 2, name: 'Embargo judicial civil' },
-  { id: 3, name: 'Embargo Judicial familia' },
-  { id: 3, name: 'Embargo Judicial Penal' },
-];
-
-export const insuranceClaimType: Catalog[] = [
-  { id: 1, name: 'Menor cuantía' },
-  { id: 2, name: 'Mayor cuantía' },
-  { id: 3, name: 'Ninguna' },
 ];

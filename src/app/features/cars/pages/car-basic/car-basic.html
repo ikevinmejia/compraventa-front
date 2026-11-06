@@ -1,5 +1,5 @@
 <form [formRoot]="carForm" class="flex flex-col gap-3 w-full">
-  <app-car-form-fields [form]="carForm"> </app-car-form-fields>
+  <app-car-form-fields [form]="carForm" [model]="model"> </app-car-form-fields>
 
   <div class="flex flex-col items-center gap-4 mt-1">
     <p-button class="w-full" [fluid]="true" type="submit" [disabled]="carForm().submitting()">

@@ -37,6 +37,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideClientHydration(),
+    // Primero se consulta la API simulada; las demás peticiones continúan hacia el servidor.
     provideHttpClient(withInterceptors([tokenInterceptor, errorInterceptor])),
   ],
 };

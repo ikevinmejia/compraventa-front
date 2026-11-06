@@ -1,5 +1,5 @@
 import { effect, WritableSignal } from '@angular/core';
-import { max, maxLength, min, pattern, required, schema } from '@angular/forms/signals';
+import { disabled, max, maxLength, min, pattern, required, schema } from '@angular/forms/signals';
 import { CarFormModel } from '../../models/car-form.model';
 
 export const ELECTRIC_ENGINE_ID = 4;
@@ -35,6 +35,20 @@ export const carBaseSchema = schema<CarFormModel>((schema) => {
     when: ({ valueOf }) => {
       const e = valueOf(schema.engineType);
       return e !== null && e.id !== ELECTRIC_ENGINE_ID;
+    },
+  });
+
+  disabled(schema.transmission, {
+    when: ({ valueOf }) => {
+      const e = valueOf(schema.engineType);
+      return e !== null && e.id === ELECTRIC_ENGINE_ID;
+    },
+  });
+
+  disabled(schema.displacement, {
+    when: ({ valueOf }) => {
+      const e = valueOf(schema.engineType);
+      return e !== null && e.id === ELECTRIC_ENGINE_ID;
     },
   });
 

@@ -1,6 +1,6 @@
 <form [formRoot]="carForm" class="flex gap-3 flex-col w-full pt-2">
   <div class="grid grid-cols-1 gap-4">
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 md:max-w-fit">
       <label for="hasEngineLeaks">¿Tiene fugas?</label>
       <p-selectbutton
         inputId="hasEngineLeaks"
@@ -9,22 +9,21 @@
         optionLabel="name"
         filterBy="name"
         appendTo="body"
+        fluid
       />
     </div>
 
-    @if (showEngineLeaksDetail()) {
-      <p-floatlabel variant="on">
-        <input
-          pInputText
-          id="engineLeaksDetail"
-          type="text"
-          [formField]="carForm.engineLeaksDetail"
-          autocomplete="off"
-          fluid
-        />
-        <label for="engineLeaksDetail">Descripción de la fuga</label>
-      </p-floatlabel>
-    }
+    <p-floatlabel variant="on">
+      <input
+        pInputText
+        id="engineLeaksDetail"
+        type="text"
+        [formField]="carForm.engineLeaksDetail"
+        autocomplete="off"
+        fluid
+      />
+      <label for="engineLeaksDetail">Descripción de la fuga</label>
+    </p-floatlabel>
 
     <p-floatlabel variant="on">
       <p-select

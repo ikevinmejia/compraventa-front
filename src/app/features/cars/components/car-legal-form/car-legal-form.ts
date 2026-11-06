@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { disabled, form, FormField, FormRoot, max, min, required } from '@angular/forms/signals';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { DatePickerModule } from '@openng/optimus-ui/datepicker';
@@ -8,17 +9,11 @@ import { InputText } from '@openng/optimus-ui/inputtext';
 import { MultiSelectModule } from '@openng/optimus-ui/multiselect';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
-import {
-  aniosEnDeuda,
-  citties,
-  departments,
-  insuranceClaimType,
-  runtPendingIssues,
-  yesNoOptions,
-} from '../../../../../data/data';
+import { catchError, distinctUntilChanged, of, switchMap } from 'rxjs';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
 import { CarLegalFormModel } from '../../models/car-legal-form.model';
+import { CatalogsService } from '../../services/catalogs.service';
 @Component({
   imports: [
     FormField,
@@ -38,6 +33,7 @@ import { CarLegalFormModel } from '../../models/car-legal-form.model';
 })
 export class CarLegalForm implements OnInit {
   private readonly toastService = inject(ToastService);
+  private readonly catalogsService = inject(CatalogsService);
 
   minDate: Date | undefined;
 
@@ -73,32 +69,79 @@ export class CarLegalForm implements OnInit {
 
   submitted = signal(false);
 
-  yesNoOptions = signal<Catalog[]>(yesNoOptions);
-  departments = signal<Catalog[]>(departments);
-  citties = signal<Catalog[]>(citties);
-  aniosEnDeuda = signal<Catalog[]>(aniosEnDeuda);
-  runtPendingIssues = signal<Catalog[]>(runtPendingIssues);
-  insuranceClaimType = signal<Catalog[]>(insuranceClaimType);
+  yesNoOptions = signal<Catalog[]>(this.catalogsService.getYesNoOptions()).asReadonly();
+  aniosEnDeuda = signal<Catalog[]>(this.catalogsService.getAniosEnDeuda()).asReadonly();
 
-  hasTrafficFines = computed(() => {
+  private departmentId = computed(
+    () => this.carModel().registrationDepartment?.id ?? null,
+    // ().value().registrationDepartment?.id ?? null
+  );
+
+  private hasTrafficFines = computed(() => {
     const hasTrafficFines = this.carModel().hasTrafficFines;
     return hasTrafficFines !== null && hasTrafficFines.id === 1; // Enabled => trafficFinesCount | trafficFinesTotalAmount
   });
 
-  hasTaxesUpToDate = computed(() => {
+  private hasTaxesUpToDate = computed(() => {
     const taxesUpToDate = this.carModel().taxesUpToDate;
     return taxesUpToDate !== null && taxesUpToDate.id === 1; // Enabled => taxesOwedYears
   });
 
-  hasRuntPendingIssues = computed(() => {
+  private hasRuntPendingIssues = computed(() => {
     const runtHasLiens = this.carModel().runtHasLiens;
     return runtHasLiens !== null && runtHasLiens.id === 1; // Se muestra el campo si hay fugas
   });
 
-  hasInsuranceClaims = computed(() => {
+  private hasInsuranceClaims = computed(() => {
     const hasInsuranceClaims = this.carModel().hasInsuranceClaims;
     return hasInsuranceClaims !== null && hasInsuranceClaims.id === 1; // Se muestra el campo si hay fugas
   });
+
+  departments = toSignal(
+    this.catalogsService.getDepartments().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
+
+  municipalities = toSignal(
+    toObservable(this.departmentId).pipe(
+      distinctUntilChanged(),
+      switchMap((departmentId) =>
+        departmentId === null
+          ? of([] as Catalog[])
+          : this.catalogsService
+              .getMunicipalities(departmentId)
+              .pipe(catchError(() => of([] as Catalog[]))),
+      ),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
+
+  structuralCondition = toSignal(
+    this.catalogsService.getStructuralConditions().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
+
+  runtPendingIssues = toSignal(
+    this.catalogsService.getRuntPendingIssues().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
+
+  insuranceClaimType = toSignal(
+    this.catalogsService.getInsuranceClaimTypes().pipe(
+      // El interceptor global muestra el error; [] deja el select en estado seguro.
+      catchError(() => of([] as Catalog[])),
+    ),
+    { initialValue: [] as Catalog[] },
+  );
 
   carForm = form(
     this.carModel,
@@ -133,6 +176,10 @@ export class CarLegalForm implements OnInit {
 
       required(schema.insuranceClaimType, {
         when: () => this.hasInsuranceClaims(),
+      });
+
+      disabled(schema.registrationCity, {
+        when: () => !this.departmentId(),
       });
 
       disabled(schema.trafficFinesCount, {
@@ -182,6 +229,7 @@ export class CarLegalForm implements OnInit {
 
   constructor() {
     effect(() => {
+      const hasDepartment = this.carModel().registrationDepartment?.id != undefined;
       const notHasTrafficFines = this.carModel().hasTrafficFines?.id === 2;
       const notHasTaxesUpToDate = this.carModel().taxesUpToDate?.id === 2;
       const notHasRuntHasLiens = this.carModel().runtHasLiens?.id === 2;
@@ -213,6 +261,12 @@ export class CarLegalForm implements OnInit {
         this.carModel.update((m) => ({
           ...m,
           insuranceClaimType: null,
+        }));
+      }
+      if (!hasDepartment && this.carModel().registrationCity !== null) {
+        this.carModel.update((m) => ({
+          ...m,
+          registrationCity: null,
         }));
       }
     });
