@@ -31,6 +31,13 @@ export default [
             path: 'legal',
             loadComponent: () => import('./pages/car-legal/car-legal').then((m) => m.CarLegal),
           },
+          {
+            path: 'imagenes',
+            loadComponent: () =>
+              import('./components/car-image-uploader/car-image-uploader').then(
+                (m) => m.CarImageUploader,
+              ),
+          },
         ],
       },
     ],

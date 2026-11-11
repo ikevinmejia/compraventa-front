@@ -18,6 +18,7 @@ export class CarDetail {
     { route: 'mecanica', icon: 'pi pi-wrench', label: 'Mecánica' },
     { route: 'cosmetica', icon: 'pi pi-car', label: 'Cosmética' },
     { route: 'legal', icon: 'pi pi-file-check', label: 'Documentación' },
+    { route: 'imagenes', icon: 'pi pi-images', label: 'Fotos' },
   ];
 
   activeTab = toSignal<string, string>(
