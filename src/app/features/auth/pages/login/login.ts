@@ -56,15 +56,13 @@ export class Login {
       submission: {
         action: async (field) => {
           try {
-            this.authService.login(field().value());
-
-            // Aquí va todo lo que quieras que pase en caso de éxito
-            // await this.router.navigate(['/auth/login']);
-            this.toastService.success('Iniciando sesión');
-            return; // sin retorno = éxito
+            await this.authService.login(field().value());
+            this.toastService.show({ summary: 'Sesión iniciada', severity: 'info' });
+            return;
           } catch (error) {
-            this.toastService.error('Error iniciar sesión', (error as Error).message);
-            return { kind: 'serverError', message: (error as Error).message };
+            const message = (error as Error).message;
+            this.toastService.error('Error al iniciar sesión', message);
+            return { kind: 'serverError', message };
           }
         },
       },

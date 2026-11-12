@@ -21,7 +21,15 @@ export class ToastService {
     return baseMs + extraWords * extraPerWord;
   }
 
-  show(summary: string, detail: string = '', severity: ToastSeverity = 'secondary') {
+  show({
+    summary,
+    detail = '',
+    severity = 'secondary',
+  }: {
+    summary: string;
+    detail?: string;
+    severity: ToastSeverity;
+  }) {
     this.messageService.add({
       severity,
       summary,
@@ -31,10 +39,10 @@ export class ToastService {
   }
 
   success(summary: string, detail: string = '') {
-    this.show(summary, detail, 'success');
+    this.show({ summary, detail, severity: 'success' });
   }
 
   error(summary: string, detail: string = '') {
-    this.show(summary, detail, 'error');
+    this.show({ summary, detail, severity: 'error' });
   }
 }

@@ -141,7 +141,10 @@ export class CarImageUploader {
           this.images.update((items) =>
             items.map((item) => ({ ...item, isCover: item.id === image.id })),
           );
-          this.toast.success('Portada actualizada', 'Esta imagen se mostrará como portada del vehículo.');
+          this.toast.success(
+            'Portada actualizada',
+            'Esta imagen se mostrará como portada del vehículo.',
+          );
         },
         error: () => this.coverError.set(true),
       });
@@ -152,7 +155,10 @@ export class CarImageUploader {
 
     const slotsLeft = this.maxFiles - this.pendingImages().length;
     if (slotsLeft <= 0) {
-      this.toast.error('Límite alcanzado', `Puedes subir hasta ${this.maxFiles} imágenes por carga.`);
+      this.toast.error(
+        'Límite alcanzado',
+        `Puedes subir hasta ${this.maxFiles} imágenes por carga.`,
+      );
       return;
     }
 
@@ -178,15 +184,25 @@ export class CarImageUploader {
     ]);
 
     if (validFiles.length > slotsLeft) {
-      invalidReasons.push(`Solo se agregaron ${slotsLeft} archivo(s): el máximo por carga es ${this.maxFiles}.`);
+      invalidReasons.push(
+        `Solo se agregaron ${slotsLeft} archivo(s): el máximo por carga es ${this.maxFiles}.`,
+      );
     }
     if (invalidReasons.length) {
-      this.toast.show('Algunos archivos no se agregaron', invalidReasons.join('. '), 'warn');
+      this.toast.show({
+        summary: 'Algunos archivos no se agregaron',
+        detail: invalidReasons.join('. '),
+        severity: 'warn',
+      });
     }
   }
 
   private isSameFile(first: File, second: File): boolean {
-    return first.name === second.name && first.size === second.size && first.lastModified === second.lastModified;
+    return (
+      first.name === second.name &&
+      first.size === second.size &&
+      first.lastModified === second.lastModified
+    );
   }
 
   private clearPending(): void {
