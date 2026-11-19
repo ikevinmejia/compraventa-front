@@ -4,11 +4,11 @@ import { RouterLink } from '@angular/router';
 import { CardModule } from '@openng/optimus-ui/card';
 
 @Component({
-  selector: 'app-car-card',
+  selector: 'app-car-published-card',
   imports: [CardModule, DecimalPipe, RouterLink],
-  templateUrl: './car-card.html',
-  styleUrl: './car-card.css',
+  templateUrl: './car-published-card.html',
+  styleUrl: './car-published-card.css',
 })
-export class CarCard {
+export class CarRegisteredCard {
   cars = Array.from({ length: 10 }, (_, i) => i);
 }

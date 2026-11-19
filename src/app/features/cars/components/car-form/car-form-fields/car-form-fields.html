@@ -54,6 +54,7 @@
       [formField]="$any(form().year)"
       [options]="years()"
       optionLabel="name"
+      optionValue="id"
       [showClear]="true"
       appendTo="body"
       fluid
@@ -64,11 +65,12 @@
   <p-floatlabel variant="on">
     <p-select
       inputId="engineType"
-      [formField]="$any(form().engineType)"
+      [formField]="$any(form().engineTypeId)"
       [options]="engineTypes.options()"
       [loading]="engineTypes.loading()"
       (onShow)="engineTypes.load()"
       optionLabel="name"
+      optionValue="id"
       [showClear]="true"
       appendTo="body"
       fluid
@@ -92,11 +94,12 @@
   <p-floatlabel variant="on">
     <p-select
       inputId="transmission"
-      [formField]="$any(form().transmission)"
+      [formField]="$any(form().transmissionId)"
       [options]="transmissions.options()"
       [loading]="transmissions.loading()"
       (onShow)="transmissions.load()"
       optionLabel="name"
+      optionValue="id"
       dataKey="id"
       [showClear]="true"
       appendTo="body"

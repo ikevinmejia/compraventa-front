@@ -16,6 +16,7 @@ export class Filters {
   // ----- Entradas y salidas -----
   fields = input.required<FilterField[]>(); // qué filtros mostrar
   value = input<FilterValue>({}); // lo que la página tiene aplicado
+
   applied = output<FilterValue>(); // se emite al aplicar
 
   // ----- Estado interno -----

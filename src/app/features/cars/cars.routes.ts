@@ -5,8 +5,14 @@ export default [
     path: '',
     children: [
       {
-        path: '',
-        loadComponent: () => import('./pages/car-list/car-list').then((m) => m.CarList),
+        path: 'registrados',
+        loadComponent: () =>
+          import('./pages/car-registered/car-registered').then((m) => m.CarRegistered),
+      },
+      {
+        path: 'publicados',
+        loadComponent: () =>
+          import('./pages/car-published/car-published').then((m) => m.CarPublished),
       },
       {
         path: ':id',

@@ -1,5 +1,38 @@
 <form [formRoot]="carForm" class="flex flex-col gap-3 w-full">
-  <app-car-form-fields [form]="carForm" [model]="model"> </app-car-form-fields>
+  <p class="font-medium text-xl mt-2 mb-3">Datos básicos</p>
+  <app-car-form-fields [form]="carForm" [model]="model">
+    <p class="font-medium text-xl mt-3 mb-4">Estado en el inventario</p>
+    <p-floatlabel variant="on">
+      <p-select
+        inputId="inventory-states"
+        [formField]="$any(carForm.inventoryStateId)"
+        [options]="inventoryStates.options()"
+        [loading]="inventoryStates.loading()"
+        (onShow)="inventoryStates.load()"
+        optionLabel="name"
+        optionValue="id"
+        [showClear]="true"
+        appendTo="body"
+        fluid
+      />
+      <label for="inventory-states">Estado</label>
+    </p-floatlabel>
+  </app-car-form-fields>
+
+  <p class="font-medium text-xl mt-3 mb-4">Precio del vehículo</p>
+
+  <p-floatlabel variant="on">
+    <input
+      pInputText
+      id="price"
+      type="number"
+      inputmode="numeric"
+      autocomplete="off"
+      [formField]="carForm.price"
+      fluid
+    />
+    <label for="price">Precio</label>
+  </p-floatlabel>
 
   <div class="flex flex-col items-center gap-4 mt-1">
     <p-button class="w-full" [fluid]="true" type="submit" [disabled]="carForm().submitting()">

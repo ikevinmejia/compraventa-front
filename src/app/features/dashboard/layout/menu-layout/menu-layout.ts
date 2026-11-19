@@ -21,9 +21,19 @@ export class MenuLayout {
       },
       {
         label: 'Autos',
-
         icon: 'pi pi-fw pi-car',
-        routerLink: ['/admin/autos'],
+        items: [
+          {
+            label: 'Registrados',
+            icon: 'pi pi-pencil',
+            routerLink: ['/admin/autos/registrados/'],
+          },
+          {
+            label: 'Publicados',
+            icon: 'pi pi-megaphone',
+            routerLink: ['/admin/autos/publicados/'],
+          },
+        ],
       },
     ];
   }

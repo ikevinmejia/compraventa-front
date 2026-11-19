@@ -3,31 +3,35 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { Catalog } from '../models/shared.interface';
 
-interface LazyRequest<T> {
-  value: T | undefined;
+interface LazyRequest<P> {
+  value: P | undefined;
 }
 
-export function lazyCatalog<T = void>(load: (parameter?: T) => Observable<Catalog[]>) {
-  // undefined significa que el usuario todavía no abrió el desplegable.
-  const request = signal<LazyRequest<T> | undefined>(undefined);
+export function lazyResource<TData, TParam = void>(
+  load: (parameter: TParam) => Observable<TData>,
+  defaultValue: TData,
+) {
+  // undefined = todavía no se ha pedido nada.
+  const request = signal<LazyRequest<TParam> | undefined>(undefined);
 
-  const resource = rxResource({
-    // rxResource no hace nada hasta que load() establezca estos parámetros.
+  const resource = rxResource<TData, LazyRequest<TParam> | undefined>({
     params: () => request(),
-    // El parámetro capturado al abrir llega aquí y se entrega al método del servicio.
-    stream: ({ params }) => load(params.value),
-    defaultValue: [] as Catalog[],
+    stream: ({ params }) => load(params.value as TParam),
+    defaultValue,
   });
 
   return {
-    // Evita leer value() cuando el recurso está en error.
-    options: computed(() => (resource.hasValue() ? resource.value() : [])),
+    data: computed(() => (resource.hasValue() ? resource.value() : defaultValue)),
     loading: resource.isLoading,
     error: resource.error,
-
-    // Se conecta a onShow. Puede recibir un ID u otro parámetro dependiente.
-    load: (parameter?: T) => request.set({ value: parameter }),
-    // Llamar al cambiar el catálogo padre evita conservar opciones del padre anterior.
+    load: (parameter?: TParam) => request.set({ value: parameter as TParam }),
+    reload: () => resource.reload(),
     reset: () => request.set(undefined),
   };
+}
+
+// Atajo para catálogos: conserva tu API actual y no tienes que tocar los componentes
+export function lazyCatalog<TParam = void>(load: (parameter: TParam) => Observable<Catalog[]>) {
+  const r = lazyResource<Catalog[], TParam>(load, []);
+  return { options: r.data, loading: r.loading, error: r.error, load: r.load, reset: r.reset };
 }

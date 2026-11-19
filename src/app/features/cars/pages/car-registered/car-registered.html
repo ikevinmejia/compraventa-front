@@ -1,0 +1,7 @@
+<app-car-list [filters]="filters()" (filtersApplied)="onFiltersApplied($event)">
+  @for (car of cars.data().data; track car.id) {
+    <app-car-registered-card [car]="car" />
+  } @empty {
+    <app-empty title="Crea nuevos registros" subtitle="Para visualizar" />
+  }
+</app-car-list>

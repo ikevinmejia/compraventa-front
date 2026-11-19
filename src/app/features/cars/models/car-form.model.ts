@@ -5,7 +5,7 @@ export interface CarFormModel {
   brand: Catalog | null;
   model: Catalog | null;
   year: number | null;
-  engineType: Catalog | null;
+  engineTypeId: number | null;
   displacement: number | null;
-  transmission: Catalog | null;
+  transmissionId: number | null;
 }

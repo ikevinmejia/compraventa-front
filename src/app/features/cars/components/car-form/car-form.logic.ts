@@ -9,9 +9,9 @@ export const emptyCarModel = (): CarFormModel => ({
   brand: null,
   model: null,
   year: null,
-  engineType: null,
+  engineTypeId: null,
   displacement: null,
-  transmission: null,
+  transmissionId: null,
 });
 
 // Reglas del formulario base. Verifica el nombre de `schema`/`apply` en tu versión.
@@ -20,35 +20,35 @@ export const carBaseSchema = schema<CarFormModel>((schema) => {
   required(schema.brand, { message: 'Marca es requerida.' });
   required(schema.model, { message: 'Modelo es requerido.' });
   required(schema.year, { message: 'Año del vehículo es requerido.' });
-  required(schema.engineType, { message: 'Tipo de motor es requerido.' });
+  required(schema.engineTypeId, { message: 'Tipo de motor es requerido.' });
 
-  required(schema.transmission, {
+  required(schema.transmissionId, {
     message: 'Transmisión es requerida.',
     when: ({ valueOf }) => {
-      const e = valueOf(schema.engineType);
-      return e !== null && e.id !== ELECTRIC_ENGINE_ID;
+      const e = valueOf(schema.engineTypeId);
+      return e !== null && e !== ELECTRIC_ENGINE_ID;
     },
   });
 
   required(schema.displacement, {
     message: 'Cilindraje es requerido.',
     when: ({ valueOf }) => {
-      const e = valueOf(schema.engineType);
-      return e !== null && e.id !== ELECTRIC_ENGINE_ID;
+      const e = valueOf(schema.engineTypeId);
+      return e !== null && e !== ELECTRIC_ENGINE_ID;
     },
   });
 
-  disabled(schema.transmission, {
+  disabled(schema.transmissionId, {
     when: ({ valueOf }) => {
-      const e = valueOf(schema.engineType);
-      return e !== null && e.id === ELECTRIC_ENGINE_ID;
+      const e = valueOf(schema.engineTypeId);
+      return e !== null && e === ELECTRIC_ENGINE_ID;
     },
   });
 
   disabled(schema.displacement, {
     when: ({ valueOf }) => {
-      const e = valueOf(schema.engineType);
-      return e !== null && e.id === ELECTRIC_ENGINE_ID;
+      const e = valueOf(schema.engineTypeId);
+      return e !== null && e === ELECTRIC_ENGINE_ID;
     },
   });
 
@@ -72,7 +72,7 @@ export function setupCarFormEffects(model: WritableSignal<CarFormModel>) {
   });
 
   effect(() => {
-    const isElectric = model().engineType?.id === ELECTRIC_ENGINE_ID;
+    const isElectric = model().engineTypeId === ELECTRIC_ENGINE_ID;
     if (isElectric && model().displacement !== null) {
       model.update((m) => ({ ...m, displacement: null, transmission: null }));
     }

@@ -1,18 +1,24 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { CatalogApi } from '../../../../core/api/catalog.api';
 import { FilterField, FilterValue } from '../../../../shared/components/filters/filter-field.model';
 import { Filters } from '../../../../shared/components/filters/filters';
 import { Paginator } from '../../../../shared/components/paginator/paginator';
-import { CarCard } from '../../components/car-card/car-card';
 
 @Component({
-  imports: [Filters, Paginator, CarCard],
+  imports: [Filters, Paginator],
   selector: 'app-car-list',
   styleUrl: './car-list.css',
   templateUrl: './car-list.html',
 })
 export class CarList {
   private catalog = inject(CatalogApi); // antes de filterFields
+
+  filters = input.required<FilterValue>();
+  filtersApplied = output<FilterValue>();
+
+  forwardFilters(filters: FilterValue): void {
+    this.filtersApplied.emit(filters);
+  }
 
   filterFields: FilterField[] = [
     {
@@ -32,6 +38,4 @@ export class CarList {
     },
     { key: 'fechaIngreso', label: 'Ingreso', type: 'date-range' },
   ];
-
-  filters = signal<FilterValue>({});
 }

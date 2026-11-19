@@ -1,0 +1,26 @@
+<a
+  [routerLink]="['/admin/autos', car().id + 1]"
+  [routerLink]="['/admin/autos', car().id]"
+  class="block no-underline text-inherit rounded-border focus-visible:outline-2 focus-visible:outline-offset-2"
+>
+  <p-card class="w-71 max-h-112 overflow-hidden cursor-pointer relative">
+    <ng-template #header>
+      <img alt="Card" class="w-full aspect-square object-cover" [src]="car().coverImageUrl" />
+    </ng-template>
+    <ng-template #content>
+      <p class="text-sm font-medium mb-2">
+        {{ car().brand }} {{ car().model }} {{ car().year }} {{ car().engineType }}
+        {{ car().transmission }} - {{ car().plate }}
+      </p>
+
+      <p class="text-sm font-normal">
+        {{ car().year }} | {{ car().displacement | number: '1.0-0' }} km
+      </p>
+      <p-tag
+        [value]="car().inventoryState"
+        [severity]="inventoryStateSeverity()"
+        class="absolute top-4 right-4"
+      />
+    </ng-template>
+  </p-card>
+</a>

@@ -1,11 +1,11 @@
-@if (root() && isVisible()) {
-  <!-- <div
-    class="p-4 flex items-center justify-between text-surface-600 dark:text-surface-200 cursor-pointer p-ripple"
+@if (root() && hasChildren() && isVisible()) {
+  <div
+    class="p-4 flex items-center justify-between text-surface-600 font-bold dark:text-surface-200 cursor-pointer p-ripple"
   >
     {{ item().label }}
-  </div> -->
+  </div>
 }
-@if ((!hasRouterLink() || hasChildren()) && isVisible()) {
+@if ((!hasRouterLink() || hasChildren()) && isVisible() && !(root() && hasChildren())) {
   <a
     [attr.href]="item().url"
     (click)="itemClick($event)"
@@ -60,7 +60,7 @@
     [animate.enter]="initialized() ? 'p-submenu-enter' : null"
     [animate.leave]="'p-submenu-leave'"
     [class.layout-root-submenulist]="root()"
-    class="list-none py-0 pl-4 pr-0 m-0 hidden overflow-y-hidden transition-all duration-400 ease-in-out"
+    class="list-none py-0 pl-4 pr-0 m-0 overflow-y-hidden transition-all duration-400 ease-in-out"
   >
     @for (child of item().items; track child?.label) {
       <li
