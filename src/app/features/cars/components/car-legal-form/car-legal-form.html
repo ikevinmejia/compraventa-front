@@ -6,9 +6,9 @@
         <p-select
           inputId="registrationDepartment"
           [formField]="$any(carForm.registrationDepartment)"
-          [options]="departments.options()"
-          [loading]="departments.loading()"
-          (onShow)="departments.load()"
+          [options]="departments.data() || []"
+          [loading]="departments.isFetching()"
+          /* (onShow)="departments.load()" */
           (onChange)="onDepartmentChange()"
           (onClear)="onDepartmentChange()"
           optionLabel="name"
@@ -25,9 +25,9 @@
         <p-select
           inputId="registrationCity"
           [formField]="$any(carForm.registrationCity)"
-          [options]="municipalities.options()"
-          [loading]="municipalities.loading()"
-          (onShow)="municipalities.load(departmentId())"
+          [options]="municipalities.data() || []"
+          [loading]="municipalities.isFetching()"
+          /* (onShow)="municipalities.load(departmentId())" */
           optionLabel="name"
           filterBy="name"
           [showClear]="true"
@@ -187,9 +187,9 @@
       <p-multiselect
         inputId="runtPendingIssues"
         [formField]="$any(carForm.runtPendingIssues)"
-        [options]="runtPendingIssues.options()"
-        [loading]="runtPendingIssues.loading()"
-        (onShow)="runtPendingIssues.load()"
+        [options]="runtPendingIssues.data() || []"
+        [loading]="runtPendingIssues.isFetching()"
+        /* (onShow)="runtPendingIssues.load()" */
         optionLabel="name"
         filterBy="name"
         [showClear]="true"
@@ -218,9 +218,9 @@
       <p-select
         inputId="insuranceClaimType"
         [formField]="$any(carForm.insuranceClaimType)"
-        [options]="insuranceClaimType.options()"
-        [loading]="insuranceClaimType.loading()"
-        (onShow)="insuranceClaimType.load()"
+        [options]="insuranceClaimType.data() || []"
+        [loading]="insuranceClaimType.isFetching()"
+        /* (onShow)="insuranceClaimType.load()" */
         optionLabel="name"
         filterBy="name"
         [showClear]="true"

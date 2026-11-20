@@ -5,9 +5,9 @@ import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
+import { injectQuery } from '@tanstack/angular-query';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
-import { lazyCatalog } from '../../../../shared/utils/lazy-catalog';
 import { CarMechanicalFormModel } from '../../models/car-mechanical-form.model';
 import { CatalogsService } from '../../services/catalogs.service';
 
@@ -31,9 +31,20 @@ export class CarMechanicalForm {
   submitted = signal(false);
 
   yesNoOptions = signal<Catalog[]>(this.catalogsService.getYesNoOptions()).asReadonly();
-  transmissionConditions = lazyCatalog(() => this.catalogsService.getTransmissionConditions());
 
-  suspensionConditions = lazyCatalog(() => this.catalogsService.getSuspensionConditions());
+  transmissionConditions = injectQuery(() => ({
+    queryKey: ['catalogs', 'transmission-conditions'],
+    queryFn: () => this.catalogsService.getTransmissionConditions(),
+    // enabled: this.opened(),
+    staleTime: Infinity,
+  }));
+
+  suspensionConditions = injectQuery(() => ({
+    queryKey: ['catalogs', 'suspension-conditions'],
+    queryFn: () => this.catalogsService.getSuspensionConditions(),
+    // enabled: this.opened(),
+    staleTime: Infinity,
+  }));
 
   showEngineLeaksDetail = computed(() => {
     const hasEngineLeaks = this.carModel().hasEngineLeaks;

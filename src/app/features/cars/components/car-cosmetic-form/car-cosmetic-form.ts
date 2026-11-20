@@ -6,9 +6,9 @@ import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
+import { injectQuery } from '@tanstack/angular-query';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
-import { lazyCatalog } from '../../../../shared/utils/lazy-catalog';
 import { CarCosmeticFormModel } from '../../models/car-cosmetic-form.model';
 import { CatalogsService } from '../../services/catalogs.service';
 
@@ -60,12 +60,41 @@ export class CarCosmeticForm {
 
   yesNoOptions = signal<Catalog[]>(this.catalogsService.getYesNoOptions()).asReadonly();
 
-  readonly rimsTypes = lazyCatalog(() => this.catalogsService.getRimsTypes());
-  readonly tiresCondition = lazyCatalog(() => this.catalogsService.getTiresConditions());
-  readonly adjustmentType = lazyCatalog(() => this.catalogsService.getAdjustmentTypes());
-  readonly paintCondition = lazyCatalog(() => this.catalogsService.getPaintConditions());
-  readonly chassisFrontDamage = lazyCatalog(() => this.catalogsService.getChassisDamages());
-  readonly structuralCondition = lazyCatalog(() => this.catalogsService.getStructuralConditions());
+  readonly rimsTypes = injectQuery(() => ({
+    queryKey: ['catalogs', 'rims-types'],
+    queryFn: () => this.catalogsService.getRimsTypes(),
+    staleTime: Infinity,
+  }));
+
+  readonly tiresCondition = injectQuery(() => ({
+    queryKey: ['catalogs', 'tires-conditions'],
+    queryFn: () => this.catalogsService.getTiresConditions(),
+    staleTime: Infinity,
+  }));
+
+  readonly adjustmentType = injectQuery(() => ({
+    queryKey: ['catalogs', 'adjustment-types'],
+    queryFn: () => this.catalogsService.getAdjustmentTypes(),
+    staleTime: Infinity,
+  }));
+
+  readonly paintCondition = injectQuery(() => ({
+    queryKey: ['catalogs', 'paint-conditions'],
+    queryFn: () => this.catalogsService.getPaintConditions(),
+    staleTime: Infinity,
+  }));
+
+  readonly chassisFrontDamage = injectQuery(() => ({
+    queryKey: ['catalogs', 'chassis-damages'],
+    queryFn: () => this.catalogsService.getChassisDamages(),
+    staleTime: Infinity,
+  }));
+
+  readonly structuralCondition = injectQuery(() => ({
+    queryKey: ['catalogs', 'structural-conditions'],
+    queryFn: () => this.catalogsService.getStructuralConditions(),
+    staleTime: Infinity,
+  }));
 
   carForm = form(
     this.carModel,

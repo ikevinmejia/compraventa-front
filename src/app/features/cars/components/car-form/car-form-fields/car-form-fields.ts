@@ -3,9 +3,8 @@ import { FieldTree, FormField } from '@angular/forms/signals';
 import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Select } from '@openng/optimus-ui/select';
-import { of } from 'rxjs';
+import { injectQuery } from '@tanstack/angular-query';
 import { Catalog } from '../../../../../shared/models/shared.interface';
-import { lazyCatalog } from '../../../../../shared/utils/lazy-catalog';
 import { CarFormModel } from '../../../models/car-form.model';
 import { CatalogsService } from '../../../services/catalogs.service';
 import { ELECTRIC_ENGINE_ID } from '../car-form.logic';
@@ -39,12 +38,33 @@ export class CarFormFields {
 
   years = signal<Catalog[]>(years);
 
-  brands = lazyCatalog(() => this.catalogsService.getBrands());
-  models = lazyCatalog<number | null>((brandId) =>
-    brandId == null ? of([] as Catalog[]) : this.catalogsService.getModels(brandId),
-  );
-  engineTypes = lazyCatalog(() => this.catalogsService.getEngineTypes());
-  transmissions = lazyCatalog(() => this.catalogsService.getTransmissions());
+  brands = injectQuery(() => ({
+    queryKey: ['catalogs', 'brands'],
+    queryFn: () => this.catalogsService.getBrands(),
+    // enabled: this.opened(),
+    staleTime: Infinity, // los catálogos casi no cambian
+  }));
+
+  models = injectQuery(() => ({
+    queryKey: ['catalogs', 'models', this.brandId()],
+    queryFn: () => this.catalogsService.getModels(this.brandId()!),
+    enabled: this.brandId() !== null,
+    staleTime: Infinity,
+  }));
+
+  engineTypes = injectQuery(() => ({
+    queryKey: ['catalogs', 'engine-types'],
+    queryFn: () => this.catalogsService.getEngineTypes(),
+    // enabled: this.opened(),
+    staleTime: Infinity, // los catálogos casi no cambian
+  }));
+
+  transmissions = injectQuery(() => ({
+    queryKey: ['catalogs', 'transmissions'],
+    queryFn: () => this.catalogsService.getTransmissions(),
+    // enabled: this.opened(),
+    staleTime: Infinity, // los catálogos casi no cambian
+  }));
 
   /**
    * La marca cambió por una acción del usuario: la referencia previa ya no aplica.

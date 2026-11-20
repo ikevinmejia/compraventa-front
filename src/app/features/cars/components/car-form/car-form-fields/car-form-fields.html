@@ -3,9 +3,9 @@
     <p-select
       inputId="brand"
       [formField]="$any(form().brand)"
-      [options]="brands.options()"
-      [loading]="brands.loading()"
-      (onShow)="brands.load()"
+      [options]="brands.data() ?? []"
+      [loading]="brands.isFetching()"
+      /* (onShow)="brands.load()" */
       (onChange)="onBrandChange()"
       (onClear)="onBrandChange()"
       optionLabel="name"
@@ -22,9 +22,9 @@
     <p-select
       inputId="model"
       [formField]="$any(form().model)"
-      [options]="models.options()"
-      [loading]="models.loading()"
-      (onShow)="models.load(brandId())"
+      [options]="models.data() ?? []"
+      [loading]="models.isFetching()"
+      /* (onShow)="models.load(brandId())" */
       optionLabel="name"
       [filter]="true"
       filterBy="name"
@@ -66,9 +66,9 @@
     <p-select
       inputId="engineType"
       [formField]="$any(form().engineTypeId)"
-      [options]="engineTypes.options()"
-      [loading]="engineTypes.loading()"
-      (onShow)="engineTypes.load()"
+      [options]="engineTypes.data() ?? []"
+      [loading]="engineTypes.isFetching()"
+      /* (onShow)="engineTypes.load()" */
       optionLabel="name"
       optionValue="id"
       [showClear]="true"
@@ -95,9 +95,9 @@
     <p-select
       inputId="transmission"
       [formField]="$any(form().transmissionId)"
-      [options]="transmissions.options()"
-      [loading]="transmissions.loading()"
-      (onShow)="transmissions.load()"
+      [options]="transmissions.data() ?? []"
+      [loading]="transmissions.isFetching()"
+      /* (onShow)="transmissions.load()" */
       optionLabel="name"
       optionValue="id"
       dataKey="id"

@@ -6,9 +6,9 @@
       <p-select
         inputId="inventory-states"
         [formField]="$any(carForm.inventoryStateId)"
-        [options]="inventoryStates.options()"
-        [loading]="inventoryStates.loading()"
-        (onShow)="inventoryStates.load()"
+        [options]="inventoryStates.data() ?? []"
+        [loading]="inventoryStates.isFetching()"
+        /* (onShow)="inventoryStates.load()" */
         optionLabel="name"
         optionValue="id"
         [showClear]="true"

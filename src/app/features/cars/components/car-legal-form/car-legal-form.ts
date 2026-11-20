@@ -8,10 +8,9 @@ import { InputText } from '@openng/optimus-ui/inputtext';
 import { MultiSelectModule } from '@openng/optimus-ui/multiselect';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
-import { of } from 'rxjs';
+import { injectQuery } from '@tanstack/angular-query';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
-import { lazyCatalog } from '../../../../shared/utils/lazy-catalog';
 import { CarLegalFormModel } from '../../models/car-legal-form.model';
 import { CatalogsService } from '../../services/catalogs.service';
 @Component({
@@ -95,20 +94,38 @@ export class CarLegalForm implements OnInit {
     return hasInsuranceClaims !== null && hasInsuranceClaims.id === 1; // Se muestra el campo si hay fugas
   });
 
-  departments = lazyCatalog(() => this.catalogsService.getDepartments());
-  municipalities = lazyCatalog<number | null>((departmentId) =>
-    departmentId == null
-      ? of([] as Catalog[])
-      : this.catalogsService.getMunicipalities(departmentId),
-  );
+  departments = injectQuery(() => ({
+    queryKey: ['catalogs', 'departments'],
+    queryFn: () => this.catalogsService.getDepartments(),
+    // enabled: this.opened(),
+    staleTime: Infinity,
+  }));
 
-  runtPendingIssues = lazyCatalog(() => this.catalogsService.getRuntPendingIssues());
-  insuranceClaimType = lazyCatalog(() => this.catalogsService.getInsuranceClaimTypes());
+  municipalities = injectQuery(() => ({
+    queryKey: ['catalogs', 'municipalities', this.departmentId()],
+    queryFn: () => this.catalogsService.getMunicipalities(this.departmentId()!),
+    enabled: this.departmentId() !== null,
+    staleTime: Infinity,
+  }));
+
+  runtPendingIssues = injectQuery(() => ({
+    queryKey: ['catalogs', 'runt-pending-issues'],
+    queryFn: () => this.catalogsService.getRuntPendingIssues(),
+    // enabled: this.opened(),
+    staleTime: Infinity,
+  }));
+
+  insuranceClaimType = injectQuery(() => ({
+    queryKey: ['catalogs', 'insurance-claim-types'],
+    queryFn: () => this.catalogsService.getInsuranceClaimTypes(),
+    // enabled: this.opened(),
+    staleTime: Infinity,
+  }));
 
   /** Al cambiar el padre, descarta el municipio y las opciones del departamento anterior. */
   onDepartmentChange(): void {
     this.carModel.update((model) => ({ ...model, registrationCity: null }));
-    this.municipalities.reset();
+    this.municipalities.refetch();
   }
 
   carForm = form(

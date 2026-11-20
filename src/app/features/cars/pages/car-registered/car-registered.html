@@ -1,7 +1,14 @@
 <app-car-list [filters]="filters()" (filtersApplied)="onFiltersApplied($event)">
-  @for (car of cars.data().data; track car.id) {
-    <app-car-registered-card [car]="car" />
-  } @empty {
-    <app-empty title="Crea nuevos registros" subtitle="Para visualizar" />
+  @if (cars.isPending()) {
+    <!-- Primera carga, todavía no hay datos -->
+    <p-progress-spinner ariaLabel="loading" />
+  } @else if (cars.isError()) {
+    <app-empty title="No se pudo cargar" subtitle="Intenta de nuevo" />
+  } @else {
+    @for (car of cars.data()?.data ?? []; track car.id) {
+      <app-car-registered-card [car]="car" />
+    } @empty {
+      <app-empty title="Crea nuevos registros" subtitle="Para visualizar" />
+    }
   }
 </app-car-list>
