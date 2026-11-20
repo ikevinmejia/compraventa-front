@@ -7,6 +7,8 @@ import { provideRouter } from '@angular/router';
 import { MessageService } from '@openng/optimus-ui/api';
 import { provideOptimus } from '@openng/optimus-ui/config';
 import { DialogService } from '@openng/optimus-ui/dynamicdialog';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
+import { withDevtools } from '@tanstack/angular-query-devtools';
 import { routes } from './app.routes';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { tokenInterceptor } from './core/interceptors/token.interceptor';
@@ -39,5 +41,6 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     // Primero se consulta la API simulada; las demás peticiones continúan hacia el servidor.
     provideHttpClient(withInterceptors([tokenInterceptor, errorInterceptor])),
+    provideTanStackQuery(() => new QueryClient(), withDevtools()),
   ],
 };
