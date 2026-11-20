@@ -3,8 +3,8 @@ import { FieldTree, FormField } from '@angular/forms/signals';
 import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Select } from '@openng/optimus-ui/select';
-import { injectQuery } from '@tanstack/angular-query';
 import { Catalog } from '../../../../../shared/models/shared.interface';
+import { injectLazyCatalog } from '../../../../../shared/utils/lazy-query';
 import { CarFormModel } from '../../../models/car-form.model';
 import { CatalogsService } from '../../../services/catalogs.service';
 import { ELECTRIC_ENGINE_ID } from '../car-form.logic';
@@ -38,32 +38,27 @@ export class CarFormFields {
 
   years = signal<Catalog[]>(years);
 
-  brands = injectQuery(() => ({
+  brands = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'brands'],
     queryFn: () => this.catalogsService.getBrands(),
-    // enabled: this.opened(),
-    staleTime: Infinity, // los catálogos casi no cambian
-  }));
-
-  models = injectQuery(() => ({
-    queryKey: ['catalogs', 'models', this.brandId()],
-    queryFn: () => this.catalogsService.getModels(this.brandId()!),
-    enabled: this.brandId() !== null,
     staleTime: Infinity,
   }));
 
-  engineTypes = injectQuery(() => ({
-    queryKey: ['catalogs', 'engine-types'],
-    queryFn: () => this.catalogsService.getEngineTypes(),
-    // enabled: this.opened(),
-    staleTime: Infinity, // los catálogos casi no cambian
+  models = injectLazyCatalog<number>((brandId) => ({
+    queryKey: ['catalogs', 'models', brandId],
+    queryFn: () => this.catalogsService.getModels(brandId),
   }));
 
-  transmissions = injectQuery(() => ({
+  engineTypes = injectLazyCatalog(() => ({
+    queryKey: ['catalogs', 'engine-types'],
+    queryFn: () => this.catalogsService.getEngineTypes(),
+    staleTime: Infinity,
+  }));
+
+  transmissions = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'transmissions'],
     queryFn: () => this.catalogsService.getTransmissions(),
-    // enabled: this.opened(),
-    staleTime: Infinity, // los catálogos casi no cambian
+    staleTime: Infinity,
   }));
 
   /**

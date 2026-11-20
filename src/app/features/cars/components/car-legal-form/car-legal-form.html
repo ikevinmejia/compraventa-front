@@ -8,7 +8,7 @@
           [formField]="$any(carForm.registrationDepartment)"
           [options]="departments.data() || []"
           [loading]="departments.isFetching()"
-          /* (onShow)="departments.load()" */
+          (onShow)="departments.open()"
           (onChange)="onDepartmentChange()"
           (onClear)="onDepartmentChange()"
           optionLabel="name"
@@ -27,7 +27,7 @@
           [formField]="$any(carForm.registrationCity)"
           [options]="municipalities.data() || []"
           [loading]="municipalities.isFetching()"
-          /* (onShow)="municipalities.load(departmentId())" */
+          (onShow)="municipalities.open(departmentId()!)"
           optionLabel="name"
           filterBy="name"
           [showClear]="true"
@@ -189,7 +189,7 @@
         [formField]="$any(carForm.runtPendingIssues)"
         [options]="runtPendingIssues.data() || []"
         [loading]="runtPendingIssues.isFetching()"
-        /* (onShow)="runtPendingIssues.load()" */
+        (onShow)="runtPendingIssues.open()"
         optionLabel="name"
         filterBy="name"
         [showClear]="true"
@@ -220,7 +220,7 @@
         [formField]="$any(carForm.insuranceClaimType)"
         [options]="insuranceClaimType.data() || []"
         [loading]="insuranceClaimType.isFetching()"
-        /* (onShow)="insuranceClaimType.load()" */
+        (onShow)="insuranceClaimType.open()"
         optionLabel="name"
         filterBy="name"
         [showClear]="true"

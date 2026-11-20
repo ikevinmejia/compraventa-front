@@ -31,7 +31,7 @@
         [formField]="$any(carForm.transmissionCondition)"
         [options]="transmissionConditions.data() || []"
         [loading]="transmissionConditions.isFetching()"
-        /* (onShow)="transmissionConditions.load()" */
+        (onShow)="transmissionConditions.open()"
         optionLabel="name"
         filterBy="name"
         [showClear]="true"
@@ -47,7 +47,7 @@
         [formField]="$any(carForm.suspensionCondition)"
         [options]="suspensionConditions.data() || []"
         [loading]="suspensionConditions.isFetching()"
-        /* (onShow)="suspensionConditions.load()" */
+        (onShow)="suspensionConditions.open()"
         optionLabel="name"
         filterBy="name"
         [showClear]="true"

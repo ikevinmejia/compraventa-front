@@ -6,9 +6,9 @@ import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
-import { injectQuery } from '@tanstack/angular-query';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
+import { injectLazyCatalog } from '../../../../shared/utils/lazy-query';
 import { CarCosmeticFormModel } from '../../models/car-cosmetic-form.model';
 import { CatalogsService } from '../../services/catalogs.service';
 
@@ -60,37 +60,37 @@ export class CarCosmeticForm {
 
   yesNoOptions = signal<Catalog[]>(this.catalogsService.getYesNoOptions()).asReadonly();
 
-  readonly rimsTypes = injectQuery(() => ({
+  readonly rimsTypes = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'rims-types'],
     queryFn: () => this.catalogsService.getRimsTypes(),
     staleTime: Infinity,
   }));
 
-  readonly tiresCondition = injectQuery(() => ({
+  readonly tiresCondition = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'tires-conditions'],
     queryFn: () => this.catalogsService.getTiresConditions(),
     staleTime: Infinity,
   }));
 
-  readonly adjustmentType = injectQuery(() => ({
+  readonly adjustmentType = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'adjustment-types'],
     queryFn: () => this.catalogsService.getAdjustmentTypes(),
     staleTime: Infinity,
   }));
 
-  readonly paintCondition = injectQuery(() => ({
+  readonly paintCondition = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'paint-conditions'],
     queryFn: () => this.catalogsService.getPaintConditions(),
     staleTime: Infinity,
   }));
 
-  readonly chassisFrontDamage = injectQuery(() => ({
+  readonly chassisFrontDamage = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'chassis-damages'],
     queryFn: () => this.catalogsService.getChassisDamages(),
     staleTime: Infinity,
   }));
 
-  readonly structuralCondition = injectQuery(() => ({
+  readonly structuralCondition = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'structural-conditions'],
     queryFn: () => this.catalogsService.getStructuralConditions(),
     staleTime: Infinity,

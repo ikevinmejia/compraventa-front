@@ -5,7 +5,7 @@
       [formField]="$any(form().brand)"
       [options]="brands.data() ?? []"
       [loading]="brands.isFetching()"
-      /* (onShow)="brands.load()" */
+      (onShow)="brands.open()"
       (onChange)="onBrandChange()"
       (onClear)="onBrandChange()"
       optionLabel="name"
@@ -24,7 +24,7 @@
       [formField]="$any(form().model)"
       [options]="models.data() ?? []"
       [loading]="models.isFetching()"
-      /* (onShow)="models.load(brandId())" */
+      (onShow)="models.open(brandId()!)"
       optionLabel="name"
       [filter]="true"
       filterBy="name"
@@ -68,7 +68,7 @@
       [formField]="$any(form().engineTypeId)"
       [options]="engineTypes.data() ?? []"
       [loading]="engineTypes.isFetching()"
-      /* (onShow)="engineTypes.load()" */
+      (onShow)="engineTypes.open()"
       optionLabel="name"
       optionValue="id"
       [showClear]="true"
@@ -97,7 +97,7 @@
       [formField]="$any(form().transmissionId)"
       [options]="transmissions.data() ?? []"
       [loading]="transmissions.isFetching()"
-      /* (onShow)="transmissions.load()" */
+      (onShow)="transmissions.open()"
       optionLabel="name"
       optionValue="id"
       dataKey="id"

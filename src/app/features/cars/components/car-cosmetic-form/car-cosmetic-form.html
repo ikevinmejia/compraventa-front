@@ -75,7 +75,7 @@
           [formField]="$any(carForm.rimsType)"
           [options]="rimsTypes.data() || []"
           [loading]="rimsTypes.isFetching()"
-          /* (onShow)="rimsTypes.load()" */
+          (onShow)="rimsTypes.open()"
           optionLabel="name"
           filterBy="name"
           [showClear]="true"
@@ -91,7 +91,7 @@
           [formField]="$any(carForm.tiresCondition)"
           [options]="tiresCondition.data() || []"
           [loading]="tiresCondition.isFetching()"
-          /* (onShow)="tiresCondition.load()" */
+          (onShow)="tiresCondition.open()"
           optionLabel="name"
           filterBy="name"
           [showClear]="true"
@@ -108,7 +108,7 @@
         [formField]="$any(carForm.steeringColumnAdjustment)"
         [options]="adjustmentType.data() || []"
         [loading]="adjustmentType.isFetching()"
-        /* (onShow)="adjustmentType.load()" */
+        (onShow)="adjustmentType.open()"
         optionLabel="name"
         filterBy="name"
         [showClear]="true"
@@ -136,7 +136,7 @@
         [formField]="$any(carForm.mirrorsType)"
         [options]="adjustmentType.data() || []"
         [loading]="adjustmentType.isFetching()"
-        /* (onShow)="adjustmentType.load()" */
+        (onShow)="adjustmentType.open()"
         optionLabel="name"
         filterBy="name"
         [showClear]="true"
@@ -152,7 +152,7 @@
         [formField]="$any(carForm.paintCondition)"
         [options]="paintCondition.data() || []"
         [loading]="paintCondition.isFetching()"
-        /* (onShow)="paintCondition.load()" */
+        (onShow)="paintCondition.open()"
         optionLabel="name"
         filterBy="name"
         [showClear]="true"
@@ -181,7 +181,7 @@
         [formField]="$any(carForm.chassisFrontDamage)"
         [options]="chassisFrontDamage.data() || []"
         [loading]="chassisFrontDamage.isFetching()"
-        /* (onShow)="chassisFrontDamage.load()" */
+        (onShow)="chassisFrontDamage.open()"
         optionLabel="name"
         filterBy="name"
         [showClear]="true"
@@ -198,7 +198,7 @@
           [formField]="$any(carForm.driverDoorPillar)"
           [options]="structuralCondition.data() || []"
           [loading]="structuralCondition.isFetching()"
-          /* (onShow)="structuralCondition.load()" */
+          (onShow)="structuralCondition.open()"
           optionLabel="name"
           filterBy="name"
           [showClear]="true"
@@ -214,7 +214,7 @@
           [formField]="$any(carForm.passengerDoorPillar)"
           [options]="structuralCondition.data() || []"
           [loading]="structuralCondition.isFetching()"
-          /* (onShow)="structuralCondition.load()" */
+          (onShow)="structuralCondition.open()"
           optionLabel="name"
           filterBy="name"
           [showClear]="true"
@@ -245,7 +245,7 @@
           [formField]="$any(carForm.trunkStructure)"
           [options]="structuralCondition.data() || []"
           [loading]="structuralCondition.isFetching()"
-          /* (onShow)="structuralCondition.load()" */
+          (onShow)="structuralCondition.open()"
           optionLabel="name"
           filterBy="name"
           [showClear]="true"
@@ -261,7 +261,7 @@
           [formField]="$any(carForm.trunkFloor)"
           [options]="structuralCondition.data() || []"
           [loading]="structuralCondition.isFetching()"
-          /* (onShow)="structuralCondition.load()" */
+          (onShow)="structuralCondition.open()"
           optionLabel="name"
           filterBy="name"
           [showClear]="true"

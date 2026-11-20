@@ -8,9 +8,9 @@ import { InputText } from '@openng/optimus-ui/inputtext';
 import { MultiSelectModule } from '@openng/optimus-ui/multiselect';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
-import { injectQuery } from '@tanstack/angular-query';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
+import { injectLazyCatalog } from '../../../../shared/utils/lazy-query';
 import { CarLegalFormModel } from '../../models/car-legal-form.model';
 import { CatalogsService } from '../../services/catalogs.service';
 @Component({
@@ -94,31 +94,28 @@ export class CarLegalForm implements OnInit {
     return hasInsuranceClaims !== null && hasInsuranceClaims.id === 1; // Se muestra el campo si hay fugas
   });
 
-  departments = injectQuery(() => ({
+  departments = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'departments'],
     queryFn: () => this.catalogsService.getDepartments(),
-    // enabled: this.opened(),
     staleTime: Infinity,
   }));
 
-  municipalities = injectQuery(() => ({
-    queryKey: ['catalogs', 'municipalities', this.departmentId()],
-    queryFn: () => this.catalogsService.getMunicipalities(this.departmentId()!),
-    enabled: this.departmentId() !== null,
+  municipalities = injectLazyCatalog<number>((departementId) => ({
+    queryKey: ['catalogs', 'municipalities', departementId],
+    queryFn: () => this.catalogsService.getMunicipalities(departementId),
+    // enabled: this.departmentId() !== null,
     staleTime: Infinity,
   }));
 
-  runtPendingIssues = injectQuery(() => ({
+  runtPendingIssues = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'runt-pending-issues'],
     queryFn: () => this.catalogsService.getRuntPendingIssues(),
-    // enabled: this.opened(),
     staleTime: Infinity,
   }));
 
-  insuranceClaimType = injectQuery(() => ({
+  insuranceClaimType = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'insurance-claim-types'],
     queryFn: () => this.catalogsService.getInsuranceClaimTypes(),
-    // enabled: this.opened(),
     staleTime: Infinity,
   }));
 

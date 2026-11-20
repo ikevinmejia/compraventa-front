@@ -3,7 +3,7 @@ import { apply, form, FormField, FormRoot, required } from '@angular/forms/signa
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { Select } from '@openng/optimus-ui/select';
-import { injectQuery } from '@tanstack/angular-query';
+import { injectLazyCatalog } from '../../../../shared/utils/lazy-query';
 import { CarFormFields } from '../../components/car-form/car-form-fields/car-form-fields';
 import { carBaseSchema, setupCarFormEffects } from '../../components/car-form/car-form.logic';
 import { CarFormModel } from '../../models/car-form.model';
@@ -23,10 +23,10 @@ interface CarEditModel extends CarFormModel {
 export class CarBasic {
   private readonly catalogsService = inject(CatalogsService);
 
-  inventoryStates = injectQuery(() => ({
+  inventoryStates = injectLazyCatalog(() => ({
     queryKey: ['catalogs', 'inventory-states'],
     queryFn: () => this.catalogsService.getInventoryStates(),
-    staleTime: Infinity, // los catálogos casi no cambian
+    staleTime: Infinity,
   }));
 
   model = signal<CarEditModel>({
