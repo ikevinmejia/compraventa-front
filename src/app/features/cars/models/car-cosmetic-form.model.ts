@@ -1,14 +1,14 @@
 import { Catalog } from '../../../shared/models/shared.interface';
 
 type WindowsCheckDto = {
-  fl: boolean | null; // front-left
-  fr: boolean | null; // front-right
-  rl: boolean | null; // rear-left
-  rr: boolean | null; // rear-right
+  fl: Catalog | null; // front-left
+  fr: Catalog | null; // front-right
+  rl: Catalog | null; // rear-left
+  rr: Catalog | null; // rear-right
 };
 
 export interface CarCosmeticFormModel {
-  electricWindowsFunctional: boolean | null;
+  electricWindowsFunctional: Catalog | null;
 
   windowsCheckByDoor: WindowsCheckDto;
 
@@ -20,11 +20,11 @@ export interface CarCosmeticFormModel {
 
   mirrorsType: Catalog | null; // Espejos manuales o electricos
 
-  mirrorsFunctional: boolean | null;
+  mirrorsFunctional: Catalog | null;
 
   paintCondition: Catalog | null; // Condición de la pintura
 
-  hoodDents: boolean | null; // Capó presenta golpes?
+  hoodDents: Catalog | null; // Capó presenta golpes?
 
   chassisFrontDamage: Catalog | null;
 
@@ -32,15 +32,15 @@ export interface CarCosmeticFormModel {
 
   passengerDoorPillar: Catalog | null;
 
-  doorsOpenProperly: boolean | null; // puertas abren bien?
+  doorsOpenProperly: Catalog | null; // puertas abren bien?
 
   trunkStructure: Catalog | null; // estructura del maletero
 
   trunkFloor: Catalog | null; // Estructura del piso del maletero
 
-  trunkHasRust: boolean | null; // Maletero tiene podridos?
+  trunkHasRust: Catalog | null; // Maletero tiene podridos?
 
-  hasSpareTire: boolean | null; // Llanta de repuesto
+  hasSpareTire: Catalog | null; // Llanta de repuesto
 
   additionalObservations: string; // Observaciones adicionales
 }

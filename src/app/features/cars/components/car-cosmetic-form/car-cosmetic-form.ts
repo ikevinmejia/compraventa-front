@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { form, FormField, FormRoot, maxLength, required } from '@angular/forms/signals';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { DividerModule } from '@openng/optimus-ui/divider';
@@ -6,10 +7,13 @@ import { FloatLabel } from '@openng/optimus-ui/floatlabel';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
+import { injectMutation, injectQuery, QueryClient } from '@tanstack/angular-query';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
 import { injectLazyCatalog } from '../../../../shared/utils/lazy-query';
 import { CarCosmeticFormModel } from '../../models/car-cosmetic-form.model';
+import { UpdateCarCosmeticlModel } from '../../models/car-query.model';
+import { CarService } from '../../services/car.service';
 import { CatalogsService } from '../../services/catalogs.service';
 
 @Component({
@@ -30,6 +34,10 @@ import { CatalogsService } from '../../services/catalogs.service';
 export class CarCosmeticForm {
   private readonly toastService = inject(ToastService);
   private readonly catalogsService = inject(CatalogsService);
+  private readonly queryClient = inject(QueryClient);
+  private readonly carService = inject(CarService);
+
+  id = input.required<string | undefined>();
 
   carModel = signal<CarCosmeticFormModel>({
     electricWindowsFunctional: null,
@@ -96,6 +104,58 @@ export class CarCosmeticForm {
     staleTime: Infinity,
   }));
 
+  readonly getCarCosmeticData = injectQuery(() => ({
+    queryKey: ['car', this.id()],
+    queryFn: () => this.carService.findOne(this.id()!),
+    enabled: !!this.id(),
+    staleTime: 5 * 60 * 1000,
+    select: (car): CarCosmeticFormModel => {
+      const cosmeticInspection = car.cosmeticInspection;
+
+      const yesOrNot = (v: boolean): Catalog => {
+        return v ? { id: 1, name: 'Sí' } : { id: 2, name: 'No' };
+      };
+
+      return {
+        electricWindowsFunctional: yesOrNot(cosmeticInspection.electricWindowsFunctional),
+        windowsCheckByDoor: {
+          fl: yesOrNot(cosmeticInspection.windowsCheckByDoor.fl),
+          fr: yesOrNot(cosmeticInspection.windowsCheckByDoor.fr),
+          rl: yesOrNot(cosmeticInspection.windowsCheckByDoor.rl),
+          rr: yesOrNot(cosmeticInspection.windowsCheckByDoor.rr),
+        },
+        rimsType: cosmeticInspection.rimsType,
+        tiresCondition: cosmeticInspection.tiresCondition,
+        steeringColumnAdjustment: cosmeticInspection.steeringColumnAdjustment,
+        mirrorsType: cosmeticInspection.mirrorsType,
+        mirrorsFunctional: yesOrNot(cosmeticInspection.mirrorsFunctional),
+        paintCondition: cosmeticInspection.paintCondition,
+        hoodDents: yesOrNot(cosmeticInspection.hoodDents),
+        chassisFrontDamage: cosmeticInspection.chassisFrontDamage,
+        driverDoorPillar: cosmeticInspection.driverDoorPillar,
+        passengerDoorPillar: cosmeticInspection.passengerDoorPillar,
+        doorsOpenProperly: yesOrNot(cosmeticInspection.doorsOpenProperly),
+        trunkStructure: cosmeticInspection.trunkStructure,
+        trunkFloor: cosmeticInspection.trunkFloor,
+        trunkHasRust: yesOrNot(cosmeticInspection.trunkHasRust),
+        hasSpareTire: yesOrNot(cosmeticInspection.hasSpareTire),
+        additionalObservations: cosmeticInspection.additionalObservations,
+      };
+    },
+  }));
+
+  readonly uptadeCarMutation = injectMutation(() => ({
+    mutationFn: ({ carId, data }: { carId: string; data: UpdateCarCosmeticlModel }) =>
+      this.carService.patchCosmeticCar(carId, data),
+    onSuccess: (_, { carId }) => {
+      this.toastService.success('Información actualizada.');
+      Promise.all([
+        this.queryClient.invalidateQueries({ queryKey: ['cars'] }),
+        this.queryClient.invalidateQueries({ queryKey: ['car', carId] }),
+      ]);
+    },
+  }));
+
   carForm = form(
     this.carModel,
     (schema) => {
@@ -129,22 +189,63 @@ export class CarCosmeticForm {
     {
       submission: {
         action: async (field) => {
-          try {
-            // this.authService.login(field().value());
-            console.log(field().value());
+          const value = field().value();
+          if (!this.id()) {
+            this.toastService.show({
+              summary: 'Vuelva a ingresar',
+              detail: 'para obtener identificación del vehículo',
+              severity: 'warn',
+            });
+          }
 
-            // Aquí va todo lo que quieras que pase en caso de éxito
-            // await this.router.navigate(['/auth/login']);
-            this.toastService.success(`información actualizada`);
-            return; // sin retorno = éxito
+          const transformToBoolean = (v: number): boolean => {
+            return v === 1 ? true : false;
+          };
+          try {
+            const data: UpdateCarCosmeticlModel = {
+              electricWindowsFunctional: transformToBoolean(value.electricWindowsFunctional?.id!),
+              windowsCheckByDoor: {
+                fl: transformToBoolean(value.windowsCheckByDoor.fl?.id!),
+                fr: transformToBoolean(value.windowsCheckByDoor.fr?.id!),
+                rl: transformToBoolean(value.windowsCheckByDoor.rl?.id!),
+                rr: transformToBoolean(value.windowsCheckByDoor.rr?.id!),
+              },
+              rimsTypeId: value.rimsType?.id!,
+              tiresConditionId: value.tiresCondition?.id!,
+              steeringColumnAdjustmentId: value.steeringColumnAdjustment?.id!,
+              mirrorsTypeId: value.mirrorsType?.id!,
+              mirrorsFunctional: transformToBoolean(value.mirrorsFunctional?.id!),
+              paintConditionId: value.paintCondition?.id!,
+              hoodDents: transformToBoolean(value.hoodDents?.id!),
+              chassisFrontDamageId: value.chassisFrontDamage?.id!,
+              driverDoorPillarId: value.driverDoorPillar?.id!,
+              passengerDoorPillarId: value.passengerDoorPillar?.id!,
+              doorsOpenProperly: transformToBoolean(value.doorsOpenProperly?.id!),
+              trunkStructureId: value.trunkStructure?.id!,
+              trunkFloorId: value.trunkFloor?.id!,
+              trunkHasRust: transformToBoolean(value.trunkHasRust?.id!),
+              hasSpareTire: transformToBoolean(value.hasSpareTire?.id!),
+              additionalObservations: value.additionalObservations,
+            };
+
+            await this.uptadeCarMutation.mutateAsync({ carId: this.id()!, data });
+            return;
           } catch (error) {
-            console.log(field().errors());
-            console.log(error);
-            this.toastService.error('Error al registrar', (error as Error).message);
-            return { kind: 'serverError', message: (error as Error).message };
+            const status = (error as HttpErrorResponse).status;
+            const message = 'No se pudo actualizar la información';
+            this.toastService.error('Error al actualizar', message);
+            return { kind: 'serverError', message };
           }
         },
       },
     },
   );
+
+  constructor() {
+    effect(() => {
+      const carData = this.getCarCosmeticData.data();
+      if (!carData) return;
+      this.carModel.set(carData);
+    });
+  }
 }

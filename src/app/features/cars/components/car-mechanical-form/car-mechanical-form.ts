@@ -57,7 +57,7 @@ export class CarMechanicalForm {
     return hasEngineLeaks !== null && hasEngineLeaks.id === 1; // Se muestra el campo si hay fugas
   });
 
-  readonly getCarBasicData = injectQuery(() => ({
+  readonly getCarMechanicalData = injectQuery(() => ({
     queryKey: ['car', this.id()],
     queryFn: () => this.carService.findOne(this.id()!),
     enabled: !!this.id(),
@@ -140,7 +140,7 @@ export class CarMechanicalForm {
 
   constructor() {
     effect(() => {
-      const carData = this.getCarBasicData.data();
+      const carData = this.getCarMechanicalData.data();
       if (!carData) return;
       this.carModel.set(carData);
     });

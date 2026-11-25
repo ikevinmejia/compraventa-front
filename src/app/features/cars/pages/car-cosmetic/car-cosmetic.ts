@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CarCosmeticForm } from '../../components/car-cosmetic-form/car-cosmetic-form';
 
 @Component({
@@ -7,4 +7,6 @@ import { CarCosmeticForm } from '../../components/car-cosmetic-form/car-cosmetic
   templateUrl: './car-cosmetic.html',
   styleUrl: './car-cosmetic.css',
 })
-export class CarCosmetic {}
+export class CarCosmetic {
+  id = input<string | undefined>();
+}

@@ -73,7 +73,7 @@
         <p-select
           inputId="rimsTypes"
           [formField]="$any(carForm.rimsType)"
-          [options]="rimsTypes.data() || []"
+          [options]="rimsTypes.options(carModel().rimsType) || []"
           [loading]="rimsTypes.isFetching()"
           (onShow)="rimsTypes.open()"
           optionLabel="name"
@@ -89,7 +89,7 @@
         <p-select
           inputId="tiresCondition"
           [formField]="$any(carForm.tiresCondition)"
-          [options]="tiresCondition.data() || []"
+          [options]="tiresCondition.options(carModel().tiresCondition) || []"
           [loading]="tiresCondition.isFetching()"
           (onShow)="tiresCondition.open()"
           optionLabel="name"
@@ -106,7 +106,7 @@
       <p-select
         inputId="steeringColumnAdjustment"
         [formField]="$any(carForm.steeringColumnAdjustment)"
-        [options]="adjustmentType.data() || []"
+        [options]="adjustmentType.options(carModel().steeringColumnAdjustment) || []"
         [loading]="adjustmentType.isFetching()"
         (onShow)="adjustmentType.open()"
         optionLabel="name"
@@ -134,7 +134,7 @@
       <p-select
         inputId="mirrorsType"
         [formField]="$any(carForm.mirrorsType)"
-        [options]="adjustmentType.data() || []"
+        [options]="adjustmentType.options(carModel().mirrorsType) || []"
         [loading]="adjustmentType.isFetching()"
         (onShow)="adjustmentType.open()"
         optionLabel="name"
@@ -150,7 +150,7 @@
       <p-select
         inputId="paintCondition"
         [formField]="$any(carForm.paintCondition)"
-        [options]="paintCondition.data() || []"
+        [options]="paintCondition.options(carModel().paintCondition) || []"
         [loading]="paintCondition.isFetching()"
         (onShow)="paintCondition.open()"
         optionLabel="name"
@@ -179,7 +179,7 @@
       <p-select
         inputId="chassisFrontDamage"
         [formField]="$any(carForm.chassisFrontDamage)"
-        [options]="chassisFrontDamage.data() || []"
+        [options]="chassisFrontDamage.options(carModel().chassisFrontDamage) || []"
         [loading]="chassisFrontDamage.isFetching()"
         (onShow)="chassisFrontDamage.open()"
         optionLabel="name"
@@ -196,7 +196,7 @@
         <p-select
           inputId="driverDoorPillar"
           [formField]="$any(carForm.driverDoorPillar)"
-          [options]="structuralCondition.data() || []"
+          [options]="structuralCondition.options(carModel().driverDoorPillar) || []"
           [loading]="structuralCondition.isFetching()"
           (onShow)="structuralCondition.open()"
           optionLabel="name"
@@ -212,7 +212,7 @@
         <p-select
           inputId="passengerDoorPillar"
           [formField]="$any(carForm.passengerDoorPillar)"
-          [options]="structuralCondition.data() || []"
+          [options]="structuralCondition.options(carModel().passengerDoorPillar) || []"
           [loading]="structuralCondition.isFetching()"
           (onShow)="structuralCondition.open()"
           optionLabel="name"
@@ -243,7 +243,7 @@
         <p-select
           inputId="trunkStructure"
           [formField]="$any(carForm.trunkStructure)"
-          [options]="structuralCondition.data() || []"
+          [options]="structuralCondition.options(carModel().trunkStructure) || []"
           [loading]="structuralCondition.isFetching()"
           (onShow)="structuralCondition.open()"
           optionLabel="name"
@@ -259,7 +259,7 @@
         <p-select
           inputId="trunkFloor"
           [formField]="$any(carForm.trunkFloor)"
-          [options]="structuralCondition.data() || []"
+          [options]="structuralCondition.options(carModel().trunkFloor) || []"
           [loading]="structuralCondition.isFetching()"
           (onShow)="structuralCondition.open()"
           optionLabel="name"

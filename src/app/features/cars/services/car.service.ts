@@ -7,6 +7,7 @@ import {
   CarDetails,
   CarListQuery,
   CreateCarModel,
+  UpdateCarCosmeticlModel,
   UpdateCarMechanicalModel,
   UpdateCarModel,
 } from '../models/car-query.model';
@@ -52,6 +53,19 @@ export class CarService {
     return firstValueFrom(
       this.http.post<UpdateCarMechanicalModel>(
         `${this.baseUrl}/car-mechanical-inspections/${carId}`,
+        updateCarMechanicalModel,
+      ),
+    );
+  }
+
+  /** PATCH /car-cosmetic-inspection/:id */
+  patchCosmeticCar(
+    carId: string,
+    updateCarMechanicalModel: UpdateCarCosmeticlModel,
+  ): Promise<UpdateCarCosmeticlModel> {
+    return firstValueFrom(
+      this.http.post<UpdateCarCosmeticlModel>(
+        `${this.baseUrl}/car-cosmetic-inspection/${carId}`,
         updateCarMechanicalModel,
       ),
     );

@@ -43,7 +43,7 @@ export interface CarDetails {
   transmissionType: Catalog;
   inventoryState: Catalog;
   images: string[];
-  cosmeticInspection: null; // ! Falta
+  cosmeticInspection: CarCosmeticInspection;
   mechanicalInspection: CarMechanicalInspection;
   legalVerification: null; // ! Falta
   coverImageUrl: string;
@@ -67,4 +67,73 @@ export interface CarMechanicalInspection {
   additionalMechanicalObservations: string;
   transmissionCondition: Catalog;
   suspensionCondition: Catalog;
+}
+
+export interface UpdateCarCosmeticlModel {
+  electricWindowsFunctional: boolean;
+
+  windowsCheckByDoor: {
+    fl: boolean; // front-left
+    fr: boolean; // front-right
+    rl: boolean; // rear-left
+    rr: boolean; // rear-right
+  };
+
+  rimsTypeId: number;
+
+  tiresConditionId: number; // Estado de las llantas
+
+  steeringColumnAdjustmentId: number; // Ajuste de la cabrilla
+
+  mirrorsTypeId: number; // Vidrios manuales o electricos
+
+  mirrorsFunctional: boolean;
+
+  paintConditionId: number; // Vidrios manuales o electricos
+
+  hoodDents: boolean; // Capó presenta golpes?
+
+  chassisFrontDamageId: number;
+
+  driverDoorPillarId: number;
+
+  passengerDoorPillarId: number;
+
+  doorsOpenProperly: boolean; // puertas abren bien?
+
+  trunkStructureId: number; // estructura del maletero
+
+  trunkFloorId: number; // Estructura del piso del maletero
+
+  trunkHasRust: boolean; // Maletero tiene podridos?
+
+  hasSpareTire: boolean; // Llanta de repuesto
+
+  additionalObservations?: string; // Llanta de repuesto
+}
+
+export interface CarCosmeticInspection {
+  electricWindowsFunctional: boolean;
+  windowsCheckByDoor: {
+    fl: boolean;
+    fr: boolean;
+    rl: boolean;
+    rr: boolean;
+  };
+  rimsType: Catalog;
+  tiresCondition: Catalog;
+  steeringColumnAdjustment: Catalog;
+  mirrorsType: Catalog;
+  mirrorsFunctional: boolean;
+  paintCondition: Catalog;
+  hoodDents: boolean;
+  chassisFrontDamage: Catalog;
+  driverDoorPillar: Catalog;
+  passengerDoorPillar: Catalog;
+  doorsOpenProperly: boolean;
+  trunkStructure: Catalog;
+  trunkFloor: Catalog;
+  trunkHasRust: boolean;
+  hasSpareTire: boolean;
+  additionalObservations: string;
 }
