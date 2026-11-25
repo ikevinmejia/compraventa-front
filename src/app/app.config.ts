@@ -3,7 +3,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeEs from '@angular/common/locales/es';
 import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideClientHydration } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withRouterConfig } from '@angular/router';
 import { MessageService } from '@openng/optimus-ui/api';
 import { provideOptimus } from '@openng/optimus-ui/config';
 import { DialogService } from '@openng/optimus-ui/dynamicdialog';
@@ -37,7 +37,13 @@ export const appConfig: ApplicationConfig = {
     MessageService,
 
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withRouterConfig({
+        paramsInheritanceStrategy: 'always', // <-- Esto permite heredar :id en rutas hijas
+      }),
+    ),
     provideClientHydration(),
     // Primero se consulta la API simulada; las demás peticiones continúan hacia el servidor.
     provideHttpClient(withInterceptors([tokenInterceptor, errorInterceptor])),

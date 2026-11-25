@@ -70,8 +70,8 @@ export class CarFormFields {
     this.model().update((current) => ({ ...current, model: null }));
   }
 
-  isElectric = computed(() => this.form().engineTypeId().value() === ELECTRIC_ENGINE_ID);
+  isElectric = computed(() => this.form().engineType().value()?.id === ELECTRIC_ENGINE_ID);
   showDisplacement = computed(
-    () => this.form().engineTypeId().value() !== null && !this.isElectric(),
+    () => this.form().engineType().value()?.id !== null && !this.isElectric(),
   );
 }

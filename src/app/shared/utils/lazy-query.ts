@@ -32,5 +32,14 @@ export function injectLazyCatalog<TParam = void>(
     open: (param: TParam) => request.set({ param }),
     reset: () => request.set(undefined),
     refetch: query.refetch,
+    options: (selected: Catalog | null) => {
+      const catalog = query.data() ?? [];
+
+      if (!selected || catalog.some((item) => item.id === selected.id)) {
+        return catalog;
+      }
+
+      return [selected, ...catalog];
+    },
   };
 }

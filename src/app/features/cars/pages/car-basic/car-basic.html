@@ -5,14 +5,14 @@
     <p-floatlabel variant="on">
       <p-select
         inputId="inventory-states"
-        [formField]="$any(carForm.inventoryStateId)"
-        [options]="inventoryStates.data() ?? []"
+        [formField]="$any(carForm.inventoryState)"
+        [options]="inventoryStates.options(model().inventoryState) ?? []"
         [loading]="inventoryStates.isFetching()"
-        /* (onShow)="inventoryStates.load()" */
+        (onShow)="inventoryStates.open()"
         optionLabel="name"
-        optionValue="id"
         [showClear]="true"
         appendTo="body"
+        dataKey="id"
         fluid
       />
       <label for="inventory-states">Estado</label>

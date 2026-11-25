@@ -4,8 +4,8 @@ export interface CarFormModel {
   plate: string;
   brand: Catalog | null;
   model: Catalog | null;
-  year: number | null;
-  engineTypeId: number | null;
+  year: Catalog | null;
+  engineType: Catalog | null;
   displacement: number | null;
-  transmissionId: number | null;
+  transmission: Catalog | null;
 }

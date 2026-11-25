@@ -29,7 +29,7 @@
       <p-select
         inputId="transmissionCondition"
         [formField]="$any(carForm.transmissionCondition)"
-        [options]="transmissionConditions.data() || []"
+        [options]="transmissionConditions.options(carModel().transmissionCondition) || []"
         [loading]="transmissionConditions.isFetching()"
         (onShow)="transmissionConditions.open()"
         optionLabel="name"
@@ -45,7 +45,7 @@
       <p-select
         inputId="suspensionCondition"
         [formField]="$any(carForm.suspensionCondition)"
-        [options]="suspensionConditions.data() || []"
+        [options]="suspensionConditions.options(carModel().suspensionCondition) || []"
         [loading]="suspensionConditions.isFetching()"
         (onShow)="suspensionConditions.open()"
         optionLabel="name"

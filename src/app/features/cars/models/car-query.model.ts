@@ -1,3 +1,5 @@
+import { Catalog } from '../../../shared/models/shared.interface';
+
 export interface CarSearchParams {
   search?: string;
   brandId?: number;
@@ -21,4 +23,48 @@ export interface CreateCarModel {
   engineTypeId: number;
   displacement: number;
   transmissionId: number;
+}
+
+export interface UpdateCarModel extends Partial<CreateCarModel> {
+  price?: number;
+  inventoryStateId?: number;
+}
+
+export interface CarDetails {
+  id: string;
+  plate: string;
+  price: number;
+  year: number;
+  displacement: number;
+  slug: string;
+  brand: Catalog;
+  model: Catalog;
+  engineType: Catalog;
+  transmissionType: Catalog;
+  inventoryState: Catalog;
+  images: string[];
+  cosmeticInspection: null; // ! Falta
+  mechanicalInspection: CarMechanicalInspection;
+  legalVerification: null; // ! Falta
+  coverImageUrl: string;
+}
+
+export interface UpdateCarMechanicalModel {
+  hasEngineLeaks: boolean; // Tiene fugas el motor
+
+  engineLeaksDetail?: string; // Detalle de fugaz
+
+  transmissionConditionId: number;
+
+  suspensionConditionId: number;
+
+  additionalMechanicalObservations?: string; // Observaciones
+}
+
+export interface CarMechanicalInspection {
+  hasEngineLeaks: boolean;
+  engineLeaksDetail: string;
+  additionalMechanicalObservations: string;
+  transmissionCondition: Catalog;
+  suspensionCondition: Catalog;
 }

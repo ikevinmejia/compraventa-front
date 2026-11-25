@@ -3,7 +3,7 @@
     <p-select
       inputId="brand"
       [formField]="$any(form().brand)"
-      [options]="brands.data() ?? []"
+      [options]="brands.options(form().brand().value()) ?? []"
       [loading]="brands.isFetching()"
       (onShow)="brands.open()"
       (onChange)="onBrandChange()"
@@ -13,6 +13,7 @@
       filterBy="name"
       [showClear]="true"
       appendTo="body"
+      dataKey="id"
       fluid
     />
     <label for="brand">Marca</label>
@@ -22,7 +23,7 @@
     <p-select
       inputId="model"
       [formField]="$any(form().model)"
-      [options]="models.data() ?? []"
+      [options]="models.options(form().model().value()) ?? []"
       [loading]="models.isFetching()"
       (onShow)="models.open(brandId()!)"
       optionLabel="name"
@@ -30,6 +31,7 @@
       filterBy="name"
       [showClear]="true"
       appendTo="body"
+      dataKey="id"
       fluid
     />
     <label for="model">Modelo</label>
@@ -54,7 +56,6 @@
       [formField]="$any(form().year)"
       [options]="years()"
       optionLabel="name"
-      optionValue="id"
       [showClear]="true"
       appendTo="body"
       fluid
@@ -65,12 +66,11 @@
   <p-floatlabel variant="on">
     <p-select
       inputId="engineType"
-      [formField]="$any(form().engineTypeId)"
-      [options]="engineTypes.data() ?? []"
+      [formField]="$any(form().engineType)"
+      [options]="engineTypes.options(form().engineType().value()) ?? []"
       [loading]="engineTypes.isFetching()"
       (onShow)="engineTypes.open()"
       optionLabel="name"
-      optionValue="id"
       [showClear]="true"
       appendTo="body"
       fluid
@@ -94,12 +94,11 @@
   <p-floatlabel variant="on">
     <p-select
       inputId="transmission"
-      [formField]="$any(form().transmissionId)"
-      [options]="transmissions.data() ?? []"
+      [formField]="$any(form().transmission)"
+      [options]="transmissions.options(form().transmission().value()) ?? []"
       [loading]="transmissions.isFetching()"
       (onShow)="transmissions.open()"
       optionLabel="name"
-      optionValue="id"
       dataKey="id"
       [showClear]="true"
       appendTo="body"

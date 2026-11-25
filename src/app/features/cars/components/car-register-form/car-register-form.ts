@@ -49,14 +49,14 @@ export class CarRegisterForm {
         try {
           await this.createCarMutation.mutateAsync({
             plate: value.plate,
-            year: value.year!,
+            year: value.year?.id!,
             brandId: value.brand!.id,
             brandNameHint: value.brand!.name,
             modelId: value.model!.id,
             modelNameHint: value.model!.name,
-            engineTypeId: value.engineTypeId!,
+            engineTypeId: value.engineType?.id!,
             displacement: value.displacement!,
-            transmissionId: value.transmissionId!,
+            transmissionId: value.transmission?.id!,
           });
 
           // Solo llega aquí si el POST salió bien
