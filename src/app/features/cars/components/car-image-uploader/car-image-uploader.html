@@ -3,7 +3,7 @@
     <h2 class="text-2xl font-semibold m-0">Fotos del vehículo</h2>
     <p class="text-sm text-surface-600 m-0">
       Sube hasta 10 imágenes por carga. Después podrás elegir cuál se mostrará como portada. Se
-      aceptan JPG, PNG y WebP de hasta 5 MB cada una.
+      aceptan JPG, PNG y WebP de hasta 500 KB cada una.
     </p>
   </header>
 
@@ -83,7 +83,7 @@
           }
         </div>
 
-        @if (uploadError()) {
+        @if (uploadMutation.isError()) {
           <p class="m-0 rounded-lg bg-red-50 p-3 text-sm text-red-800" role="alert">
             No se pudieron subir las imágenes. Tus archivos siguen seleccionados; puedes intentar de
             nuevo.
@@ -97,10 +97,10 @@
           <button
             type="button"
             class="rounded-lg bg-primary-600 px-5 py-2.5 font-semibold text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
-            [disabled]="uploading()"
+            [disabled]="uploadMutation.isPending()"
             (click)="upload()"
           >
-            @if (uploading()) {
+            @if (uploadMutation.isPending()) {
               <i class="pi pi-spin pi-spinner mr-2" aria-hidden="true"></i>
               Subiendo…
             } @else {
@@ -121,21 +121,25 @@
       </p>
     </div>
 
-    @if (coverError()) {
+    @if (setCoverMutation.isError()) {
       <p class="m-0 rounded-lg bg-red-50 p-3 text-sm text-red-800" role="alert">
         No se pudo cambiar la portada. Inténtalo de nuevo.
       </p>
     }
 
-    @if (loadingImages()) {
+    @if (getImages.isPending()) {
       <div class="flex items-center gap-3 rounded-lg bg-surface-50 p-5" role="status">
         <i class="pi pi-spin pi-spinner text-primary-600" aria-hidden="true"></i>
         <span>Cargando imágenes…</span>
       </div>
-    } @else if (loadError()) {
+    } @else if (getImages.isError()) {
       <div class="flex flex-col items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-5">
         <p class="m-0 text-red-800">No fue posible cargar la galería.</p>
-        <button type="button" class="font-medium text-red-900 underline" (click)="loadImages()">
+        <button
+          type="button"
+          class="font-medium text-red-900 underline"
+          (click)="getImages.refetch()"
+        >
           Intentar de nuevo
         </button>
       </div>
@@ -165,6 +169,16 @@
                   <i class="pi pi-star-fill" aria-hidden="true"></i>
                   Portada
                 </span>
+              } @else {
+                <p-button
+                  icon="pi pi-trash"
+                  aria-label="eliminar-imagen"
+                  title="eliminar imagen"
+                  severity="danger"
+                  class="absolute right-2 top-2"
+                  [loading]="deleteImageMutation.isPending()"
+                  (onClick)="deleteImage(image)"
+                />
               }
             </div>
             <div class="p-3">
@@ -173,7 +187,7 @@
               } @else {
                 <button
                   type="button"
-                  class="flex w-full items-center justify-center gap-2 rounded-lg border border-primary-600 px-3 py-2 text-sm font-semibold text-primary-700 hover:bg-primary-50 disabled:cursor-wait disabled:opacity-60"
+                  class="flex w-full items-center justify-center gap-2 rounded-lg border border-primary-600 px-3 py-2 text-sm font-semibold text-primary-700 hover:bg-primary-50 disabled:cursor-wait disabled:opacity-60 cursor-pointer"
                   [disabled]="coveringImageId() !== null"
                   (click)="setCover(image)"
                 >

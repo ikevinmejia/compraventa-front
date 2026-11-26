@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { CarImage, CarWithImages } from '../models/car-image.model';
 
@@ -21,15 +21,21 @@ export class CarImagesService {
    * `FilesInterceptor('files', 10)` espera que cada archivo use la clave `files`.
    * El navegador añade automáticamente el boundary del multipart/form-data.
    */
-  upload(carId: string, files: File[]): Observable<unknown> {
+  upload(carId: string, files: File[]): Promise<unknown> {
     const body = new FormData();
     for (const file of files) body.append('files', file, file.name);
 
-    return this.http.patch(`${this.carsUrl}/${carId}/images`, body);
+    return firstValueFrom(this.http.patch(`${this.carsUrl}/${carId}/images`, body));
   }
 
   /** Marca una imagen ya asociada como portada del vehículo. */
-  setCover(carId: string, imageId: string): Observable<unknown> {
-    return this.http.patch(`${this.carsUrl}/${carId}/images/${imageId}/cover`, {});
+  setCover(carId: string, imageId: string): Promise<unknown> {
+    return firstValueFrom(this.http.patch(`${this.carsUrl}/${carId}/images/${imageId}/cover`, {}));
+  }
+
+  delete(carId: string, imgPublicId: string): Promise<unknown> {
+    return firstValueFrom(
+      this.http.delete(`${this.carsUrl}/${carId}/images`, { params: { imgPublicId } }),
+    );
   }
 }

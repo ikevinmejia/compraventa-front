@@ -1,10 +1,10 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
-import { finalize } from 'rxjs';
+import { Component, DestroyRef, effect, inject, input, signal, untracked } from '@angular/core';
+import { ButtonModule } from '@openng/optimus-ui/button';
+import { injectMutation, injectQuery, QueryClient } from '@tanstack/angular-query';
 import { ToastService } from '../../../../core/services/toast.service';
 import { CarImage } from '../../models/car-image.model';
 import { CarImagesService } from '../../services/car-images.service';
+import { CarService } from '../../services/car.service';
 
 interface PendingImage {
   file: File;
@@ -13,59 +13,105 @@ interface PendingImage {
 
 @Component({
   selector: 'app-car-image-uploader',
-  imports: [],
+  imports: [ButtonModule],
   templateUrl: './car-image-uploader.html',
   styleUrl: './car-image-uploader.css',
 })
 export class CarImageUploader {
-  private readonly route = inject(ActivatedRoute);
   private readonly imagesService = inject(CarImagesService);
-  private readonly toast = inject(ToastService);
+  private readonly carService = inject(CarService);
+  private readonly queryClient = inject(QueryClient);
+  private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   // Esta página es hija de la ruta /admin/autos/:id.
-  readonly carId = this.route.parent?.snapshot.paramMap.get('id') ?? '';
+  readonly id = input<string | undefined>();
 
   readonly images = signal<CarImage[]>([]);
   readonly pendingImages = signal<PendingImage[]>([]);
-  readonly loadingImages = signal(true);
-  readonly loadError = signal(false);
-  readonly uploading = signal(false);
-  readonly uploadError = signal(false);
   readonly coveringImageId = signal<string | null>(null);
-  readonly coverError = signal(false);
   readonly isDragging = signal(false);
 
   private readonly maxFiles = 10;
-  private readonly maxFileSize = 5 * 1024 * 1024;
+  private readonly maxFileSize = 500 * 1024; // 512,000 bytes (500 KB)
   private readonly allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
   constructor() {
     // Las previsualizaciones son object URLs del navegador; revocarlas libera memoria.
     this.destroyRef.onDestroy(() => this.releasePreviews());
-    this.loadImages();
+
+    effect(() => {
+      const id = this.id();
+      const images = this.getImages.data();
+      if (!id || !images) return;
+      // untracked: evita que el effect dependa de los signals que se leen dentro de loadImages
+      untracked(() => this.images.set(images));
+    });
   }
 
-  loadImages(): void {
-    if (!this.carId) {
-      this.loadingImages.set(false);
-      this.loadError.set(true);
-      return;
-    }
+  readonly getImages = injectQuery(() => ({
+    queryKey: ['car', this.id()],
+    queryFn: () => this.carService.findOne(this.id()!),
+    enabled: !!this.id(),
+    staleTime: 5 * 60 * 1000,
+    select: ({ images }): CarImage[] => {
+      return images;
+    },
+  }));
 
-    this.loadingImages.set(true);
-    this.loadError.set(false);
-    this.imagesService
-      .getImages(this.carId)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.loadingImages.set(false)),
-      )
-      .subscribe({
-        next: (images) => this.images.set(images),
-        error: () => this.loadError.set(true),
+  readonly uploadMutation = injectMutation(() => ({
+    mutationFn: ({ carId, files }: { carId: string; files: File[] }) =>
+      this.imagesService.upload(carId, files),
+    onSuccess: (_, { carId, files }) => {
+      const uploadedCount = files.length;
+      this.pendingImages.set([]);
+      this.toastService.success(
+        uploadedCount === 1 ? 'Imagen subida' : 'Imágenes subidas',
+        `${uploadedCount} ${uploadedCount === 1 ? 'imagen quedó asociada' : 'imágenes quedaron asociadas'} al vehículo.`,
+      );
+      Promise.all([
+        this.queryClient.invalidateQueries({ queryKey: ['cars'] }),
+        this.queryClient.invalidateQueries({ queryKey: ['car', carId] }),
+      ]);
+    },
+  }));
+
+  readonly setCoverMutation = injectMutation(() => ({
+    mutationFn: ({ carId, imageId }: { carId: string; imageId: string }) =>
+      this.imagesService.setCover(carId, imageId),
+    onSuccess: (_, { carId, imageId }) => {
+      this.images.update((items) =>
+        items.map((item) => ({ ...item, isCover: item.id === imageId })),
+      );
+      this.toastService.show({
+        summary: 'Portada actualizada',
+        detail: 'Esta imagen se mostrará como portada del vehículo.',
+        severity: 'info',
       });
-  }
+      Promise.all([
+        this.queryClient.invalidateQueries({ queryKey: ['cars'] }),
+        this.queryClient.invalidateQueries({ queryKey: ['car', carId] }),
+      ]);
+    },
+  }));
+
+  readonly deleteImageMutation = injectMutation(() => ({
+    mutationFn: ({ carId, imageId }: { carId: string; imageId: string }) =>
+      this.imagesService.delete(carId, imageId),
+    onSuccess: (_, { carId, imageId }) => {
+      this.images.update((items) =>
+        items.map((item) => ({ ...item, isCover: item.id === imageId })),
+      );
+      this.toastService.success('Imagen eliminada');
+      Promise.all([
+        this.queryClient.invalidateQueries({ queryKey: ['cars'] }),
+        this.queryClient.invalidateQueries({ queryKey: ['car', carId] }),
+      ]);
+    },
+    onError: (error) => {
+      this.toastService.error('Ocurrió un error al eliminar', error.message);
+    },
+  }));
 
   onFileInput(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -100,54 +146,24 @@ export class CarImageUploader {
 
   upload(): void {
     const files = this.pendingImages().map(({ file }) => file);
-    if (!files.length || this.uploading()) return;
+    const carId = this.id();
+    if (!files.length || this.uploadMutation.isPending() || !carId) return;
 
-    this.uploadError.set(false);
-    this.uploading.set(true);
-    this.imagesService
-      .upload(this.carId, files)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.uploading.set(false)),
-      )
-      .subscribe({
-        next: () => {
-          const uploadedCount = files.length;
-          this.clearPending();
-          this.toast.success(
-            uploadedCount === 1 ? 'Imagen subida' : 'Imágenes subidas',
-            `${uploadedCount} ${uploadedCount === 1 ? 'imagen quedó asociada' : 'imágenes quedaron asociadas'} al vehículo.`,
-          );
-          // La respuesta GET incluye los IDs necesarios para elegir la portada.
-          this.loadImages();
-        },
-        error: () => this.uploadError.set(true),
-      });
+    this.uploadMutation.mutate({ carId, files });
   }
 
   setCover(image: CarImage): void {
-    if (image.isCover || this.coveringImageId()) return;
+    const carId = this.id();
+    if (image.isCover || this.coveringImageId() || !carId) return;
 
-    this.coverError.set(false);
     this.coveringImageId.set(image.id);
-    this.imagesService
-      .setCover(this.carId, image.id)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.coveringImageId.set(null)),
-      )
-      .subscribe({
-        next: () => {
-          this.images.update((items) =>
-            items.map((item) => ({ ...item, isCover: item.id === image.id })),
-          );
-          this.toast.success(
-            'Portada actualizada',
-            'Esta imagen se mostrará como portada del vehículo.',
-          );
-        },
-        error: () => this.coverError.set(true),
-      });
+
+    this.setCoverMutation.mutate({ carId, imageId: image.id });
+  }
+
+  deleteImage(image: CarImage) {
+    const { carId, publicId } = image;
+    this.deleteImageMutation.mutate({ carId, imageId: publicId });
   }
 
   private addFiles(files: File[]): void {
@@ -155,7 +171,7 @@ export class CarImageUploader {
 
     const slotsLeft = this.maxFiles - this.pendingImages().length;
     if (slotsLeft <= 0) {
-      this.toast.error(
+      this.toastService.error(
         'Límite alcanzado',
         `Puedes subir hasta ${this.maxFiles} imágenes por carga.`,
       );
@@ -169,7 +185,7 @@ export class CarImageUploader {
       if (!this.allowedTypes.has(file.type)) {
         invalidReasons.push(`${file.name}: formato no permitido`);
       } else if (file.size > this.maxFileSize) {
-        invalidReasons.push(`${file.name}: supera 5 MB`);
+        invalidReasons.push(`${file.name}: supera 500 KB`);
       } else if (this.pendingImages().some((item) => this.isSameFile(item.file, file))) {
         invalidReasons.push(`${file.name}: ya está seleccionada`);
       } else {
@@ -189,7 +205,7 @@ export class CarImageUploader {
       );
     }
     if (invalidReasons.length) {
-      this.toast.show({
+      this.toastService.show({
         summary: 'Algunos archivos no se agregaron',
         detail: invalidReasons.join('. '),
         severity: 'warn',

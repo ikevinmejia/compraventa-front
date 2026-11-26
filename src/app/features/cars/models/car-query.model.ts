@@ -1,4 +1,5 @@
 import { Catalog } from '../../../shared/models/shared.interface';
+import { CarImage } from './car-image.model';
 
 export interface CarSearchParams {
   search?: string;
@@ -42,7 +43,7 @@ export interface CarDetails {
   engineType: Catalog;
   transmissionType: Catalog;
   inventoryState: Catalog;
-  images: string[];
+  images: CarImage[];
   cosmeticInspection: CarCosmeticInspection;
   mechanicalInspection: CarMechanicalInspection;
   legalVerification: CarLegalInspection;
