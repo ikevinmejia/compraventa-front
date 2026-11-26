@@ -45,19 +45,15 @@ export interface CarDetails {
   images: string[];
   cosmeticInspection: CarCosmeticInspection;
   mechanicalInspection: CarMechanicalInspection;
-  legalVerification: null; // ! Falta
+  legalVerification: CarLegalInspection;
   coverImageUrl: string;
 }
 
 export interface UpdateCarMechanicalModel {
   hasEngineLeaks: boolean; // Tiene fugas el motor
-
   engineLeaksDetail?: string; // Detalle de fugaz
-
   transmissionConditionId: number;
-
   suspensionConditionId: number;
-
   additionalMechanicalObservations?: string; // Observaciones
 }
 
@@ -71,44 +67,27 @@ export interface CarMechanicalInspection {
 
 export interface UpdateCarCosmeticlModel {
   electricWindowsFunctional: boolean;
-
   windowsCheckByDoor: {
     fl: boolean; // front-left
     fr: boolean; // front-right
     rl: boolean; // rear-left
     rr: boolean; // rear-right
   };
-
   rimsTypeId: number;
-
   tiresConditionId: number; // Estado de las llantas
-
   steeringColumnAdjustmentId: number; // Ajuste de la cabrilla
-
   mirrorsTypeId: number; // Vidrios manuales o electricos
-
   mirrorsFunctional: boolean;
-
   paintConditionId: number; // Vidrios manuales o electricos
-
   hoodDents: boolean; // Capó presenta golpes?
-
   chassisFrontDamageId: number;
-
   driverDoorPillarId: number;
-
   passengerDoorPillarId: number;
-
   doorsOpenProperly: boolean; // puertas abren bien?
-
   trunkStructureId: number; // estructura del maletero
-
   trunkFloorId: number; // Estructura del piso del maletero
-
   trunkHasRust: boolean; // Maletero tiene podridos?
-
   hasSpareTire: boolean; // Llanta de repuesto
-
   additionalObservations?: string; // Llanta de repuesto
 }
 
@@ -136,4 +115,43 @@ export interface CarCosmeticInspection {
   trunkHasRust: boolean;
   hasSpareTire: boolean;
   additionalObservations: string;
+}
+
+export interface UpdateCarLegalModel {
+  registrationDepartmentId: number;
+  registrationCityId: number;
+  soatExpirationDate: Date; // vigencia de soat
+  technicalInspectionExpirationDate: Date; // vigencia tecnomecanica
+  hasTrafficFines: boolean; // Tiene fotomultas?
+  trafficFinesCount: number; // Cantidad de multas
+  trafficFinesTotalAmount: number; // Total en dinero de multas
+  taxesUpToDate: boolean; // Impuestos al día si o no
+  taxesOwedYears: number; // Años de deuda de impuestos
+  runtMatchesLicense: boolean; // Coincide la licencia con el runt?
+  runtHasLiens: boolean; // Tiene gravamenes?
+  runtPendingIssues?: { id: number }[];
+  municipalTrafficLightTaxUpToDate: boolean; // Esta al día impuesto municipal - semaforización
+  hadPublicServiceUse: boolean; // Tuvo uso público?
+  hasInsuranceClaims: boolean; // Tiene siniestros?
+  insuranceClaimTypeId: number;
+}
+
+export interface CarLegalInspection {
+  id: string;
+  registrationDepartment: Catalog;
+  registrationCity: Catalog;
+  soatExpirationDate: string;
+  technicalInspectionExpirationDate: string;
+  hasTrafficFines: boolean;
+  trafficFinesCount: number;
+  trafficFinesTotalAmount: number;
+  taxesUpToDate: boolean;
+  taxesOwedYears: number;
+  runtMatchesLicense: boolean;
+  runtHasLiens: boolean;
+  runtPendingIssues: Catalog[];
+  municipalTrafficLightTaxUpToDate: boolean;
+  hadPublicServiceUse: boolean;
+  hasInsuranceClaims: boolean;
+  insuranceClaimType: Catalog;
 }

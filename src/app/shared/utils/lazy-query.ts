@@ -32,14 +32,20 @@ export function injectLazyCatalog<TParam = void>(
     open: (param: TParam) => request.set({ param }),
     reset: () => request.set(undefined),
     refetch: query.refetch,
-    options: (selected: Catalog | null) => {
+    options: (selected: Catalog | Catalog[] | null | undefined): Catalog[] => {
       const catalog = query.data() ?? [];
 
-      if (!selected || catalog.some((item) => item.id === selected.id)) {
+      // Normalizamos a arreglo
+      const selectedList = Array.isArray(selected) ? selected : selected ? [selected] : [];
+
+      if (!selectedList.length) {
         return catalog;
       }
 
-      return [selected, ...catalog];
+      const catalogIds = new Set(catalog.map((item) => item.id));
+      const missing = selectedList.filter((item) => !catalogIds.has(item.id));
+
+      return missing.length ? [...missing, ...catalog] : catalog;
     },
   };
 }

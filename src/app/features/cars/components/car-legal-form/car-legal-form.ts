@@ -1,4 +1,5 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, computed, effect, inject, input, OnInit, signal } from '@angular/core';
 import { disabled, form, FormField, FormRoot, max, min, required } from '@angular/forms/signals';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { DatePickerModule } from '@openng/optimus-ui/datepicker';
@@ -8,10 +9,14 @@ import { InputText } from '@openng/optimus-ui/inputtext';
 import { MultiSelectModule } from '@openng/optimus-ui/multiselect';
 import { Select } from '@openng/optimus-ui/select';
 import { SelectButtonModule } from '@openng/optimus-ui/selectbutton';
+import { injectMutation, injectQuery, QueryClient } from '@tanstack/angular-query';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Catalog } from '../../../../shared/models/shared.interface';
+import { parseDateOnly } from '../../../../shared/utils/date.utils';
 import { injectLazyCatalog } from '../../../../shared/utils/lazy-query';
 import { CarLegalFormModel } from '../../models/car-legal-form.model';
+import { UpdateCarLegalModel } from '../../models/car-query.model';
+import { CarService } from '../../services/car.service';
 import { CatalogsService } from '../../services/catalogs.service';
 @Component({
   imports: [
@@ -33,19 +38,12 @@ import { CatalogsService } from '../../services/catalogs.service';
 export class CarLegalForm implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly catalogsService = inject(CatalogsService);
+  private readonly queryClient = inject(QueryClient);
+  private readonly carService = inject(CarService);
+
+  id = input.required<string | undefined>();
 
   minDate: Date | undefined;
-
-  ngOnInit() {
-    let today = new Date();
-    let month = today.getMonth();
-    let year = today.getFullYear();
-    let prevMonth = month;
-    let prevYear = prevMonth === 11 ? year - 1 : year;
-    this.minDate = new Date();
-    this.minDate.setMonth(prevMonth);
-    this.minDate.setFullYear(prevYear);
-  }
 
   carModel = signal<CarLegalFormModel>({
     registrationDepartment: null,
@@ -79,9 +77,9 @@ export class CarLegalForm implements OnInit {
     return hasTrafficFines !== null && hasTrafficFines.id === 1; // Enabled => trafficFinesCount | trafficFinesTotalAmount
   });
 
-  private hasTaxesUpToDate = computed(() => {
+  private owesTaxes = computed(() => {
     const taxesUpToDate = this.carModel().taxesUpToDate;
-    return taxesUpToDate !== null && taxesUpToDate.id === 1; // Enabled => taxesOwedYears
+    return taxesUpToDate !== null && taxesUpToDate.id === 2;
   });
 
   private hasRuntPendingIssues = computed(() => {
@@ -125,6 +123,56 @@ export class CarLegalForm implements OnInit {
     this.municipalities.refetch();
   }
 
+  readonly getCarLegalData = injectQuery(() => ({
+    queryKey: ['car', this.id()],
+    queryFn: () => this.carService.findOne(this.id()!),
+    enabled: !!this.id(),
+    staleTime: 5 * 60 * 1000,
+    select: (car): CarLegalFormModel => {
+      const legalVerification = car.legalVerification;
+      const yesOrNot = (v: boolean): Catalog => {
+        return v ? { id: 1, name: 'Sí' } : { id: 2, name: 'No' };
+      };
+      return {
+        hadPublicServiceUse: yesOrNot(legalVerification.hadPublicServiceUse),
+        hasInsuranceClaims: yesOrNot(legalVerification.hasInsuranceClaims),
+        hasTrafficFines: yesOrNot(legalVerification.hasTrafficFines),
+        insuranceClaimType: legalVerification.insuranceClaimType,
+        municipalTrafficLightTaxUpToDate: yesOrNot(
+          legalVerification.municipalTrafficLightTaxUpToDate,
+        ),
+        registrationCity: legalVerification.registrationCity,
+        registrationDepartment: legalVerification.registrationDepartment,
+        runtHasLiens: yesOrNot(legalVerification.runtHasLiens),
+        runtMatchesLicense: yesOrNot(legalVerification.runtMatchesLicense),
+        runtPendingIssues: legalVerification.runtPendingIssues,
+        soatExpirationDate: parseDateOnly(legalVerification.soatExpirationDate),
+        taxesOwedYears: {
+          id: legalVerification.taxesOwedYears,
+          name: legalVerification.taxesOwedYears.toString(),
+        },
+        taxesUpToDate: yesOrNot(legalVerification.taxesUpToDate),
+        technicalInspectionExpirationDate: parseDateOnly(
+          legalVerification.technicalInspectionExpirationDate,
+        ),
+        trafficFinesCount: legalVerification.trafficFinesCount,
+        trafficFinesTotalAmount: legalVerification.trafficFinesTotalAmount,
+      };
+    },
+  }));
+
+  readonly uptadeCarMutation = injectMutation(() => ({
+    mutationFn: ({ carId, data }: { carId: string; data: UpdateCarLegalModel }) =>
+      this.carService.patchLegalCar(carId, data),
+    onSuccess: (_, { carId }) => {
+      this.toastService.success('Información actualizada.');
+      Promise.all([
+        this.queryClient.invalidateQueries({ queryKey: ['cars'] }),
+        this.queryClient.invalidateQueries({ queryKey: ['car', carId] }),
+      ]);
+    },
+  }));
+
   carForm = form(
     this.carModel,
     (schema) => {
@@ -149,7 +197,7 @@ export class CarLegalForm implements OnInit {
       });
 
       required(schema.taxesOwedYears, {
-        when: () => this.hasTaxesUpToDate(),
+        when: () => this.owesTaxes(),
       });
 
       required(schema.runtPendingIssues, {
@@ -173,7 +221,7 @@ export class CarLegalForm implements OnInit {
       });
 
       disabled(schema.taxesOwedYears, {
-        when: () => !this.hasTaxesUpToDate(),
+        when: () => !this.owesTaxes(),
       });
 
       disabled(schema.runtPendingIssues, {
@@ -190,24 +238,62 @@ export class CarLegalForm implements OnInit {
     {
       submission: {
         action: async (field) => {
+          const value = field().value();
+          if (!this.id()) {
+            this.toastService.show({
+              summary: 'Vuelva a ingresar',
+              detail: 'para obtener identificación del vehículo',
+              severity: 'warn',
+            });
+          }
+          const transformToBoolean = (v: number): boolean => {
+            return v === 1 ? true : false;
+          };
           try {
-            // this.authService.login(field().value());
-            console.log(field().value());
+            const data: UpdateCarLegalModel = {
+              registrationDepartmentId: value.registrationDepartment?.id!,
+              registrationCityId: value.registrationCity?.id!,
+              soatExpirationDate: value.soatExpirationDate!,
+              technicalInspectionExpirationDate: value.technicalInspectionExpirationDate!,
+              hasTrafficFines: transformToBoolean(value.hasTrafficFines?.id!),
+              trafficFinesCount: value.trafficFinesCount!,
+              trafficFinesTotalAmount: value.trafficFinesTotalAmount!,
+              taxesUpToDate: transformToBoolean(value.taxesUpToDate?.id!),
+              taxesOwedYears: value.taxesOwedYears?.id!,
+              runtMatchesLicense: transformToBoolean(value.runtMatchesLicense?.id!),
+              runtHasLiens: transformToBoolean(value.runtHasLiens?.id!),
+              municipalTrafficLightTaxUpToDate: transformToBoolean(
+                value.municipalTrafficLightTaxUpToDate?.id!,
+              ),
+              hadPublicServiceUse: transformToBoolean(value.hadPublicServiceUse?.id!),
+              hasInsuranceClaims: transformToBoolean(value.hasInsuranceClaims?.id!),
+              insuranceClaimTypeId: value.insuranceClaimType?.id!,
+              runtPendingIssues: value.runtPendingIssues?.map((i) => ({ id: i.id })),
+            };
 
-            // Aquí va todo lo que quieras que pase en caso de éxito
-            // await this.router.navigate(['/auth/login']);
-            this.toastService.success(`información actualizada`);
-            return; // sin retorno = éxito
+            await this.uptadeCarMutation.mutateAsync({ carId: this.id()!, data });
+            return;
           } catch (error) {
-            console.log(field().errors());
-            console.log(error);
-            this.toastService.error('Error al registrar', (error as Error).message);
-            return { kind: 'serverError', message: (error as Error).message };
+            const status = (error as HttpErrorResponse).status;
+            const message = 'No se pudo actualizar la información';
+            this.toastService.error('Error al actualizar', message);
+            return { kind: 'serverError', message };
           }
         },
       },
     },
   );
+
+  ngOnInit() {
+    let today = new Date();
+    let month = today.getMonth();
+    let year = today.getFullYear();
+    let prevMonth = month;
+    let prevYear = prevMonth === 11 ? year - 1 : year;
+    this.minDate = new Date();
+    this.minDate.setMonth(prevMonth);
+    this.minDate.setFullYear(prevYear);
+  }
 
   constructor() {
     effect(() => {
@@ -227,7 +313,7 @@ export class CarLegalForm implements OnInit {
           trafficFinesTotalAmount: null,
         }));
       }
-      if (notHasTaxesUpToDate && this.carModel().taxesOwedYears !== null) {
+      if (!this.owesTaxes() && this.carModel().taxesOwedYears !== null) {
         this.carModel.update((m) => ({
           ...m,
           taxesOwedYears: null,
@@ -251,6 +337,12 @@ export class CarLegalForm implements OnInit {
           registrationCity: null,
         }));
       }
+    });
+
+    effect(() => {
+      const carData = this.getCarLegalData.data();
+      if (!carData) return;
+      this.carModel.set(carData);
     });
   }
 }

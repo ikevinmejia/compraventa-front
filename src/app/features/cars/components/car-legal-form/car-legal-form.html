@@ -6,7 +6,7 @@
         <p-select
           inputId="registrationDepartment"
           [formField]="$any(carForm.registrationDepartment)"
-          [options]="departments.data() || []"
+          [options]="departments.options(carModel().registrationDepartment) || []"
           [loading]="departments.isFetching()"
           (onShow)="departments.open()"
           (onChange)="onDepartmentChange()"
@@ -25,7 +25,7 @@
         <p-select
           inputId="registrationCity"
           [formField]="$any(carForm.registrationCity)"
-          [options]="municipalities.data() || []"
+          [options]="municipalities.options(carModel().registrationCity) || []"
           [loading]="municipalities.isFetching()"
           (onShow)="municipalities.open(departmentId()!)"
           optionLabel="name"
@@ -187,9 +187,9 @@
       <p-multiselect
         inputId="runtPendingIssues"
         [formField]="$any(carForm.runtPendingIssues)"
-        [options]="runtPendingIssues.data() || []"
+        [options]="runtPendingIssues.options(carModel().runtPendingIssues) || []"
         [loading]="runtPendingIssues.isFetching()"
-        (onShow)="runtPendingIssues.open()"
+        (onPanelShow)="runtPendingIssues.open()"
         optionLabel="name"
         filterBy="name"
         [showClear]="true"
@@ -218,7 +218,7 @@
       <p-select
         inputId="insuranceClaimType"
         [formField]="$any(carForm.insuranceClaimType)"
-        [options]="insuranceClaimType.data() || []"
+        [options]="insuranceClaimType.options(carModel().insuranceClaimType) || []"
         [loading]="insuranceClaimType.isFetching()"
         (onShow)="insuranceClaimType.open()"
         optionLabel="name"

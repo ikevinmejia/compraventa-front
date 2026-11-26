@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CarLegalForm } from '../../components/car-legal-form/car-legal-form';
 
 @Component({
@@ -7,4 +7,6 @@ import { CarLegalForm } from '../../components/car-legal-form/car-legal-form';
   templateUrl: './car-legal.html',
   styleUrl: './car-legal.css',
 })
-export class CarLegal {}
+export class CarLegal {
+  id = input<string | undefined>();
+}

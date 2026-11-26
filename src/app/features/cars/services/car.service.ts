@@ -8,6 +8,7 @@ import {
   CarListQuery,
   CreateCarModel,
   UpdateCarCosmeticlModel,
+  UpdateCarLegalModel,
   UpdateCarMechanicalModel,
   UpdateCarModel,
 } from '../models/car-query.model';
@@ -51,7 +52,7 @@ export class CarService {
     updateCarMechanicalModel: UpdateCarMechanicalModel,
   ): Promise<UpdateCarMechanicalModel> {
     return firstValueFrom(
-      this.http.post<UpdateCarMechanicalModel>(
+      this.http.patch<UpdateCarMechanicalModel>(
         `${this.baseUrl}/car-mechanical-inspections/${carId}`,
         updateCarMechanicalModel,
       ),
@@ -64,8 +65,21 @@ export class CarService {
     updateCarMechanicalModel: UpdateCarCosmeticlModel,
   ): Promise<UpdateCarCosmeticlModel> {
     return firstValueFrom(
-      this.http.post<UpdateCarCosmeticlModel>(
+      this.http.patch<UpdateCarCosmeticlModel>(
         `${this.baseUrl}/car-cosmetic-inspection/${carId}`,
+        updateCarMechanicalModel,
+      ),
+    );
+  }
+
+  /** PATCH /car-legal-verification/:id */
+  patchLegalCar(
+    carId: string,
+    updateCarMechanicalModel: UpdateCarLegalModel,
+  ): Promise<UpdateCarLegalModel> {
+    return firstValueFrom(
+      this.http.patch<UpdateCarLegalModel>(
+        `${this.baseUrl}/car-legal-verification/${carId}`,
         updateCarMechanicalModel,
       ),
     );
