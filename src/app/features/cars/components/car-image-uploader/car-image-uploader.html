@@ -117,7 +117,8 @@
     <div>
       <h3 id="gallery-heading" class="text-lg font-semibold m-0">Galería</h3>
       <p class="text-sm text-surface-600 mt-1 mb-0">
-        La imagen marcada como portada se usa para representar este vehículo.
+        Arrastra las imágenes para cambiar su orden. También puedes usar los botones de flecha. La
+        portada se administra de forma independiente.
       </p>
     </div>
 
@@ -153,12 +154,22 @@
       </div>
     } @else {
       <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        @for (image of images(); track image.id) {
-          <article class="overflow-hidden rounded-xl border border-surface-200 bg-surface-0">
+        @for (image of images(); track image.id; let index = $index) {
+          <article
+            class="overflow-hidden rounded-xl border border-surface-200 bg-surface-0 transition-opacity cursor-grab"
+            [class.opacity-50]="draggedImageId() === image.id"
+            [class.border-primary-500]="draggedImageId() !== null && draggedImageId() !== image.id"
+            [draggable]="true"
+            (dragstart)="onImageDragStart($event, image)"
+            (dragover)="onImageDragOver($event)"
+            (drop)="onImageDrop($event, image.id)"
+            (dragend)="onImageDragEnd()"
+          >
             <div class="relative">
-              <img
+              <p-image
                 [src]="image.url"
                 [alt]="image.isCover ? 'Portada del vehículo' : 'Foto del vehículo'"
+                [preview]="true"
                 loading="lazy"
                 class="aspect-4/3 w-full object-cover"
               />
@@ -182,6 +193,31 @@
               }
             </div>
             <div class="p-3">
+              <div class="mb-3 flex items-center justify-between gap-2">
+                <span class="text-sm font-medium">Posición {{ index + 1 }}</span>
+                <div class="flex gap-1">
+                  <button
+                    type="button"
+                    class="flex h-8 w-8 items-center justify-center rounded border border-surface-300 hover:bg-surface-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    [disabled]="index === 0"
+                    [attr.aria-label]="'Mover imagen a la posición ' + index"
+                    title="Mover antes"
+                    (click)="moveImageBy(image.id, -1)"
+                  >
+                    <i class="pi pi-arrow-up" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="flex h-8 w-8 items-center justify-center rounded border border-surface-300 hover:bg-surface-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    [disabled]="index === images().length - 1"
+                    [attr.aria-label]="'Mover imagen a la posición ' + (index + 2)"
+                    title="Mover después"
+                    (click)="moveImageBy(image.id, 1)"
+                  >
+                    <i class="pi pi-arrow-down" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
               @if (image.isCover) {
                 <p class="mb-0 mt-0 text-sm font-medium text-amber-800">Portada actual</p>
               } @else {

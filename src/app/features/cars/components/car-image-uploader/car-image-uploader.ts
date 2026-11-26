@@ -1,11 +1,11 @@
 import { Component, DestroyRef, effect, inject, input, signal, untracked } from '@angular/core';
 import { ButtonModule } from '@openng/optimus-ui/button';
+import { ImageModule } from '@openng/optimus-ui/image';
 import { injectMutation, injectQuery, QueryClient } from '@tanstack/angular-query';
 import { ToastService } from '../../../../core/services/toast.service';
 import { CarImage } from '../../models/car-image.model';
 import { CarImagesService } from '../../services/car-images.service';
 import { CarService } from '../../services/car.service';
-
 interface PendingImage {
   file: File;
   previewUrl: string;
@@ -13,7 +13,7 @@ interface PendingImage {
 
 @Component({
   selector: 'app-car-image-uploader',
-  imports: [ButtonModule],
+  imports: [ButtonModule, ImageModule],
   templateUrl: './car-image-uploader.html',
   styleUrl: './car-image-uploader.css',
 })
@@ -31,6 +31,8 @@ export class CarImageUploader {
   readonly pendingImages = signal<PendingImage[]>([]);
   readonly coveringImageId = signal<string | null>(null);
   readonly isDragging = signal(false);
+  /** ID de la imagen que se está arrastrando dentro de la galería. */
+  readonly draggedImageId = signal<string | null>(null);
 
   private readonly maxFiles = 10;
   private readonly maxFileSize = 500 * 1024; // 512,000 bytes (500 KB)
@@ -55,7 +57,9 @@ export class CarImageUploader {
     enabled: !!this.id(),
     staleTime: 5 * 60 * 1000,
     select: ({ images }): CarImage[] => {
-      return images;
+      // El backend puede devolver la relación sin orden; presentamos primero
+      // displayOrder para que la galería respete el orden guardado.
+      return [...images].sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
     },
   }));
 
@@ -136,6 +140,51 @@ export class CarImageUploader {
     this.addFiles(Array.from(event.dataTransfer?.files ?? []));
   }
 
+  /** Inicia el arrastre de una imagen ya guardada en la galería. */
+  onImageDragStart(event: DragEvent, image: CarImage): void {
+    this.draggedImageId.set(image.id);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', image.id);
+    }
+  }
+
+  /** El navegador solo permite soltar sobre un elemento que cancela dragover. */
+  onImageDragOver(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+  }
+
+  /** Coloca la imagen arrastrada antes de la imagen sobre la que se suelta. */
+  onImageDrop(event: DragEvent, targetImageId: string): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const draggedId = this.draggedImageId() ?? event.dataTransfer?.getData('text/plain');
+    if (draggedId && draggedId !== targetImageId) {
+      this.moveImageBefore(draggedId, targetImageId);
+    }
+    this.draggedImageId.set(null);
+  }
+
+  onImageDragEnd(): void {
+    this.draggedImageId.set(null);
+  }
+
+  /** Alternativa accesible al arrastre: mueve una imagen una posición. */
+  moveImageBy(imageId: string, offset: -1 | 1): void {
+    const currentIndex = this.images().findIndex((image) => image.id === imageId);
+    const targetIndex = currentIndex + offset;
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= this.images().length) return;
+
+    this.images.update((items) => {
+      const reordered = [...items];
+      const [image] = reordered.splice(currentIndex, 1);
+      reordered.splice(targetIndex, 0, image);
+      return this.withDisplayOrder(reordered);
+    });
+  }
+
   removePending(index: number): void {
     this.pendingImages.update((items) => {
       const removed = items[index];
@@ -159,6 +208,25 @@ export class CarImageUploader {
     this.coveringImageId.set(image.id);
 
     this.setCoverMutation.mutate({ carId, imageId: image.id });
+  }
+
+  private moveImageBefore(draggedId: string, targetId: string): void {
+    this.images.update((items) => {
+      const fromIndex = items.findIndex((image) => image.id === draggedId);
+      const toIndex = items.findIndex((image) => image.id === targetId);
+      if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return items;
+
+      const reordered = [...items];
+      const [draggedImage] = reordered.splice(fromIndex, 1);
+      // Busca el destino otra vez: al quitar la imagen pueden cambiar sus índices.
+      const adjustedTargetIndex = reordered.findIndex((image) => image.id === targetId);
+      reordered.splice(adjustedTargetIndex, 0, draggedImage);
+      return this.withDisplayOrder(reordered);
+    });
+  }
+
+  private withDisplayOrder(items: CarImage[]): CarImage[] {
+    return items.map((image, displayOrder) => ({ ...image, displayOrder }));
   }
 
   deleteImage(image: CarImage) {

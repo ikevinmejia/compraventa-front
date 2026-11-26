@@ -5,6 +5,8 @@ export interface CarImage {
   url: string;
   publicId: string;
   isCover: boolean;
+  /** Orden persistido por el backend para mostrar la galería. */
+  displayOrder?: number;
 }
 
 /** findOne del backend debe incluir la relación `images` del vehículo. */
