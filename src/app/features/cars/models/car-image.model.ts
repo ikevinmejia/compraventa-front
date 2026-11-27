@@ -14,3 +14,7 @@ export interface CarWithImages {
   id: string;
   images?: CarImage[];
 }
+
+export interface ReorderImages {
+  imageIds: string[];
+}

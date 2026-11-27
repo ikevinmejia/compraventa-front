@@ -3,7 +3,7 @@ import { ButtonModule } from '@openng/optimus-ui/button';
 import { ImageModule } from '@openng/optimus-ui/image';
 import { injectMutation, injectQuery, QueryClient } from '@tanstack/angular-query';
 import { ToastService } from '../../../../core/services/toast.service';
-import { CarImage } from '../../models/car-image.model';
+import { CarImage, ReorderImages } from '../../models/car-image.model';
 import { CarImagesService } from '../../services/car-images.service';
 import { CarService } from '../../services/car.service';
 interface PendingImage {
@@ -99,6 +99,22 @@ export class CarImageUploader {
     },
   }));
 
+  readonly updateOrderMutation = injectMutation(() => ({
+    mutationFn: ({ carId, images }: { carId: string; images: ReorderImages }) =>
+      this.imagesService.updateImages(carId, images),
+    onSuccess: (_, { carId }) => {
+      this.toastService.show({
+        summary: 'Orden de imagenes',
+        detail: 'actualizado.',
+        severity: 'info',
+      });
+      Promise.all([
+        this.queryClient.invalidateQueries({ queryKey: ['cars'] }),
+        this.queryClient.invalidateQueries({ queryKey: ['car', carId] }),
+      ]);
+    },
+  }));
+
   readonly deleteImageMutation = injectMutation(() => ({
     mutationFn: ({ carId, imageId }: { carId: string; imageId: string }) =>
       this.imagesService.delete(carId, imageId),
@@ -126,11 +142,13 @@ export class CarImageUploader {
 
   onDragOver(event: DragEvent): void {
     event.preventDefault();
+    console.log('over');
     this.isDragging.set(true);
   }
 
   onDragLeave(event: DragEvent): void {
     event.preventDefault();
+    console.log('leave');
     this.isDragging.set(false);
   }
 
@@ -183,6 +201,12 @@ export class CarImageUploader {
       reordered.splice(targetIndex, 0, image);
       return this.withDisplayOrder(reordered);
     });
+    const carId = this.id();
+    if (!carId) return;
+
+    const orderImages = this.images().flatMap((i) => i.id);
+
+    this.updateOrderMutation.mutate({ carId, images: { imageIds: orderImages } });
   }
 
   removePending(index: number): void {
@@ -223,6 +247,12 @@ export class CarImageUploader {
       reordered.splice(adjustedTargetIndex, 0, draggedImage);
       return this.withDisplayOrder(reordered);
     });
+    const carId = this.id();
+    if (!carId) return;
+
+    const orderImages = this.images().flatMap((i) => i.id);
+
+    this.updateOrderMutation.mutate({ carId, images: { imageIds: orderImages } });
   }
 
   private withDisplayOrder(items: CarImage[]): CarImage[] {

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom, map, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { CarImage, CarWithImages } from '../models/car-image.model';
+import { CarImage, CarWithImages, ReorderImages } from '../models/car-image.model';
 
 /** Peticiones HTTP para leer y administrar las imágenes asociadas a un auto. */
 @Injectable({ providedIn: 'root' })
@@ -26,6 +26,10 @@ export class CarImagesService {
     for (const file of files) body.append('files', file, file.name);
 
     return firstValueFrom(this.http.patch(`${this.carsUrl}/${carId}/images`, body));
+  }
+
+  updateImages(carId: string, images: ReorderImages): Promise<unknown> {
+    return firstValueFrom(this.http.patch(`${this.carsUrl}/${carId}/images/order`, images));
   }
 
   /** Marca una imagen ya asociada como portada del vehículo. */
