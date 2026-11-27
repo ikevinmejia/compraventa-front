@@ -33,8 +33,10 @@ export class CarRegistered {
     placeholderData: keepPreviousData,
   }));
 
-  onFiltersApplied(rawFilters: FilterValue): void {
-    this.searchParams.set(rawFilters);
+  onFiltersApplied(searchParams: CarSearchParams): void {
+    // Conservamos lo aplicado para que el formulario de filtros refleje la búsqueda.
+    this.filters.set({ ...searchParams });
+    this.searchParams.set(searchParams);
     this.page.update((page) => ({ ...page, offset: 1 }));
   }
 }

@@ -1,9 +1,4 @@
-import { Observable } from 'rxjs';
-
-export interface FilterOption {
-  label: string;
-  value: unknown;
-}
+import { Catalog } from '../../models/shared.interface';
 
 export interface FilterField {
   key: string; // nombre de la propiedad en el valor que se emite
@@ -11,9 +6,11 @@ export interface FilterField {
   type: 'text' | 'select' | 'date-range';
   placeholder?: string;
 
-  // Solo 'select'
-  options?: FilterOption[]; // opciones fijas
-  loadOptions?: (parentValue: unknown) => Observable<FilterOption[]>; // opciones remotas
+  // Solo 'select'. Las opciones y el loading llegan desde el componente dueño del catálogo.
+  options?: Catalog[];
+  loading?: boolean;
+  // Se llama al abrir el select. El propietario (CarList) dispara la query de TanStack.
+  loadOptions?: (parentValue: unknown) => void;
   dependsOn?: string; // key del filtro padre
 
   // Solo 'text'

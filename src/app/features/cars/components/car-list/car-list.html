@@ -1,4 +1,4 @@
-<app-filters [fields]="filterFields" [value]="filters()" (applied)="forwardFilters($event)" />
+<app-filters [fields]="filterFields()" [value]="filters()" (applied)="forwardFilters($event)" />
 <div class="grid grid-cols-[repeat(auto-fill,minmax(17.75rem,1fr))] gap-4 my-5">
   <ng-content #body></ng-content>
 </div>

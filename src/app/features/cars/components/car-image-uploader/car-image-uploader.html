@@ -2,9 +2,9 @@
   <header class="flex flex-col gap-2">
     <h2 class="text-2xl font-semibold m-0">Fotos del vehículo</h2>
     <p class="text-sm text-surface-600 m-0">
-      Sube hasta 10 imágenes por carga. Después podrás elegir cuál se mostrará como portada. Se
-      aceptan JPG, PNG y WebP de hasta 500 KB cada una.
+      Sube hasta 10 imágenes por carga. Después podrás elegir cuál se mostrará como portada.
     </p>
+    <p class="text-sm text-surface-600 m-0">Se aceptan JPG, PNG y WebP de hasta 500 KB cada una.</p>
   </header>
 
   <section class="flex flex-col gap-4" aria-labelledby="upload-heading">
@@ -116,10 +116,17 @@
   <section class="flex flex-col gap-4" aria-labelledby="gallery-heading">
     <div>
       <h3 id="gallery-heading" class="text-lg font-semibold m-0">Galería</h3>
-      <p class="text-sm text-surface-600 mt-1 mb-0">
-        Arrastra las imágenes para cambiar su orden. También puedes usar los botones de flecha. La
-        portada se administra de forma independiente.
-      </p>
+      <ul class="list-disc pl-8">
+        <li class="text-sm text-surface-600 mt-1 mb-0">
+          Arrastra las imágenes para cambiar su orden.
+        </li>
+        <li class="text-sm text-surface-600 mt-1 mb-0">
+          También puedes usar los botones de flecha.
+        </li>
+        <li class="text-sm text-surface-600 mt-1 mb-0">
+          La portada se administra de forma independiente.
+        </li>
+      </ul>
     </div>
 
     @if (setCoverMutation.isError()) {

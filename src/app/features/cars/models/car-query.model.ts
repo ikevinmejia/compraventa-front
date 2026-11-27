@@ -5,6 +5,8 @@ export interface CarSearchParams {
   search?: string;
   brandId?: number;
   modelId?: number;
+  engineTypeId?: number;
+  transmissionId?: number;
   dateFrom?: string;
   dateTo?: string;
 }
